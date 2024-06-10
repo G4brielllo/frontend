@@ -28,12 +28,15 @@
           </template>
         </v-data-table>
       </v-card-text>
+      <v-btn class="operation-buttons" @click="addClient"> Dodaj</v-btn>
+      <v-btn class="operation-buttons" @click="returnToHomePage"> Wróć</v-btn>
     </v-card>
   </v-container>
 </template>
 
 <script>
 export default {
+  name: 'ListClients',
   data() {
     return {
       search: '',
@@ -50,11 +53,17 @@ export default {
       clients: [
         { lp: 1, name: 'Client 1', logo: 'logo1.png', country: 'Poland', dateAdded: '2024-06-01', actions: 'edit/delete' },
         { lp: 2, name: 'Client 2', logo: 'logo2.png', country: 'Germany', dateAdded: '2024-05-30', actions: 'edit/delete' },
-        // Add more clients as needed
+
       ],
     };
   },
   methods: {
+    returnToHomePage(){
+      this.$router.push('/returnToHomePage');
+    },
+    addClient(){
+      this.$router.push('/addClient');
+    },
     editItem(item) {
       console.log('Edytuj:', item);
     },
@@ -107,5 +116,9 @@ export default {
 .v-data-table__wrapper {
   border-radius: 8px;
   overflow: hidden;
+}
+.operation-buttons{
+  justify-self: left,
+  margin-right = 10px;
 }
 </style>

@@ -29,11 +29,14 @@
           </template>
         </v-data-table>
       </v-card-text>
+      <v-btn class="operation-buttons" @click="addProject"> Dodaj</v-btn>
+      <v-btn class="operation-buttons" @click="returnToHomePage"> Wróć</v-btn>
     </v-card>
   </v-container>
 </template>
 
 <script>
+
 export default {
   data() {
     return {
@@ -62,6 +65,12 @@ export default {
     };
   },
   methods: {
+    returnToHomePage(){
+      this.$router.push('/returnToHomePage');
+    },
+    addProject(){
+      this.$router.push('/addProject');
+    },
     editProject(project) {
       console.log('Edytuj projekt:', project);
     },

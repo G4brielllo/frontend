@@ -14,7 +14,11 @@
           </template>
         </v-data-table>
       </v-card-text>
+      <v-btn class="operation-buttons" @click="addEstimation"> Dodaj</v-btn>
+      <v-btn class="operation-buttons" @click="returnToHomePage"> Wróć</v-btn>
+
     </v-card>
+    
   </v-container>
 </template>
 
@@ -39,15 +43,21 @@ export default {
     };
   },
   methods: {
-    editItem(item) {
-      console.log('Edytuj:', item);
+    returnToHomePage(){
+      this.$router.push('/returnToHomePage');
     },
-    deleteItem(item) {
-      const index = this.elements.indexOf(item);
-      if (index !== -1) {
-        this.elements.splice(index, 1);
-      }
+    addEstimation(){
+      this.$router.push('/addEstimation');
     },
+    // editItem(item) {
+    //   console.log('Edytuj:', item);
+    // },
+    // deleteItem(item) {
+    //   const index = this.elements.indexOf(item);
+    //   if (index !== -1) {
+    //     this.elements.splice(index, 1);
+    //   }
+    // },
   },
 };
 </script>
@@ -69,5 +79,9 @@ export default {
 
 .compact-data-table {
   margin-top: 20px;
+}
+.operation-buttons{
+  justify-self: left,
+  margin-right = 10px;
 }
 </style>

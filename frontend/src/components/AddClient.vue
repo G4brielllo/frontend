@@ -2,7 +2,7 @@
     <v-container>
       <v-card class="elevation-4">
         <v-toolbar color="primary" dark>
-          <v-toolbar-title>Edycja klienta</v-toolbar-title>
+          <v-toolbar-title>Klient</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card-text>
@@ -30,7 +30,7 @@
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" @click="save" :disabled="!valid">Zapisz</v-btn>
-          <v-btn @click="cancelEdit">Anuluj</v-btn>
+          <v-btn @click="cancelClientAdding">Anuluj</v-btn>
         </v-card-actions>
       </v-card>
     </v-container>
@@ -52,6 +52,13 @@
       };
     },
     methods: {
+
+      cancelClientAdding(){
+      this.$router.push('/cancelClientAdding');
+      },
+      addProject(){
+        this.$router.push('/addClient');
+      },
       save() {
         if (this.$refs.form.validate()) {
           console.log('Zapisz:', this.client);

@@ -31,7 +31,7 @@
         </v-card-text>
         <v-card-actions>
           <v-btn color="black" @click="addProject">Dodaj</v-btn>
-          <v-btn color="black" @click="cancelAdd">Anuluj</v-btn>
+          <v-btn color="black" @click="cancelProjectAdding">Anuluj</v-btn>
         </v-card-actions>
       </v-card>
     </v-container>
@@ -55,13 +55,21 @@
       };
     },
     methods: {
-      addProject() {
+
+      cancelProjectAdding(){
+      this.$router.push('/cancelProjectAdding');
+      },
+      addProject(){
+        this.$router.push('/addClient');
+      },
+
+      addProject1() {
         if (this.$refs.form.validate()) {
           console.log('Added project:', this.project);
           this.clearForm();
         }
       },
-      cancelAdd() {
+      cancelAdd1() {
         console.log('Cancelled adding project');
         this.clearForm();
       },

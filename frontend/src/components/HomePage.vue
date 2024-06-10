@@ -8,13 +8,19 @@
             Wybierz akcję, którą chcesz wykonać:
           </v-card-text>
           <v-card-actions class="flex-container">
-            <v-btn class="flex-item" color="primary" dark @click="goToPage('clients')">Zarządzaj Klientami</v-btn>
-            <v-btn class="flex-item" color="primary" dark @click="goToPage('projects')">Zarządzaj Projektami</v-btn>
-            <v-btn class="flex-item" color="primary" dark @click="goToPage('estimations')">Zarządzaj Estymacjami</v-btn>
+            <v-btn class="flex-item" color="primary" dark @click="goToListClients">Zarządzaj Klientami</v-btn>
+            <v-btn class="flex-item" color="primary" dark @click="goToListProjects">Zarządzaj Projektami</v-btn>
+            <v-btn class="flex-item" color="primary" dark @click="goToListEstimations">Zarządzaj Estymacjami</v-btn>
           </v-card-actions>
-          <v-row justify="center">
+          <v-row>
+              <v-col cols="12" sm="4" md="3">
+              <v-img :src='user'></v-img>
+            </v-col>
             <v-col cols="12" sm="4" md="3">
-              <v-img src="/assets/user.png" aspect-ratio="1"></v-img>
+              <v-img :src='project'></v-img>
+            </v-col>
+            <v-col cols="12" sm="4" md="3">
+              <v-img :src='estimation'></v-img>
             </v-col>
           </v-row>
         </v-card>
@@ -24,15 +30,36 @@
 </template>
 
 <script>
+import user from '@/assets/user.png';
+import project from '@/assets/project.png';
+import estimation from '@/assets/budgeting.png';
+
 export default {
   name: 'HomePageComponent',
+  data() {
+    return {
+      user: user,
+      project: project,
+      estimation: estimation
+    };
+  },
   methods: {
     goToPage(page) {
-      this.$router.push({ name: page });
-    }
+      this.$router.push({ name: page }); 
+    },
+    goToListClients(){
+      this.$router.push('/listClients');
+    },
+    goToListProjects(){
+      this.$router.push('/listProjects');
+    },
+    goToListEstimations(){
+      this.$router.push('/listEstimations');
+    },
   }
 }
 </script>
+
 
 <style>
 .v-card {

@@ -2,7 +2,7 @@
   <v-container>
     <v-card class="elevation-4">
       <v-toolbar color="primary" dark>
-        <v-toolbar-title>Dodaj estymację</v-toolbar-title>
+        <v-toolbar-title>Dodaj wycenę</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
         <v-card-text>
@@ -60,7 +60,7 @@
         </v-card-text>
         <v-card-actions>
           <v-btn color="black" @click="validateForm">Dodaj</v-btn>
-          <v-btn color="black" @click="cancelAdd">Anuluj</v-btn>
+          <v-btn color="black" @click="cancelEstimationAdding">Anuluj</v-btn>
         </v-card-actions>
       </v-card>
     </v-container>
@@ -88,12 +88,19 @@
       };
     },
     methods: {
+
+      cancelEstimationAdding(){
+      this.$router.push('/cancelEstimationAdding');
+      },
+      addProject(){
+        this.$router.push('/addClient');
+      },
       validateForm() {
         if (this.$refs.form.validate()) {
           console.log('Dodano estymację:', this.estimation);
         }
       },
-      cancelAdd() {
+      cancelAdd1() {
         console.log('Anulowano dodawanie estymacji');
       }
     }
