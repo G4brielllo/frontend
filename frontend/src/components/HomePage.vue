@@ -2,27 +2,25 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <v-card class="mx-auto" max-width="1500" elevation="10" rounded>
+        <v-card class="mx-auto" max-width="1200" elevation="10" rounded>
           <v-card-title class="headline" style="font-size: 24px; color: #333;">Witaj</v-card-title>
           <v-card-text style="font-size: 18px; color: #666;">
             Wybierz akcję, którą chcesz wykonać:
           </v-card-text>
           <v-card-actions class="flex-container">
-            <v-btn class="flex-item" color="primary" dark @click="goToListClients">Zarządzaj Klientami</v-btn>
-            <v-btn class="flex-item" color="primary" dark @click="goToListProjects">Zarządzaj Projektami</v-btn>
-            <v-btn class="flex-item" color="primary" dark @click="goToListEstimations">Zarządzaj Estymacjami</v-btn>
+            <v-col cols="12" sm="4" class="flex-column-center">
+              <v-btn class="flex-item" color="primary" dark @click="goToListClients">Zarządzaj Klientami</v-btn>
+              <v-img :src='user' class="image-item"></v-img>
+            </v-col>
+            <v-col cols="12" sm="4" class="flex-column-center">
+              <v-btn class="flex-item" color="primary" dark @click="goToListProjects">Zarządzaj Projektami</v-btn>
+              <v-img :src='project' class="image-item"></v-img>
+            </v-col>
+            <v-col cols="12" sm="4" class="flex-column-center">
+              <v-btn class="flex-item" color="primary" dark @click="goToListEstimations">Zarządzaj Estymacjami</v-btn>
+              <v-img :src='estimation' class="image-item"></v-img>
+            </v-col>
           </v-card-actions>
-          <v-row>
-              <v-col cols="12" sm="4" md="3">
-              <v-img :src='user'></v-img>
-            </v-col>
-            <v-col cols="12" sm="4" md="3">
-              <v-img :src='project'></v-img>
-            </v-col>
-            <v-col cols="12" sm="4" md="3">
-              <v-img :src='estimation'></v-img>
-            </v-col>
-          </v-row>
         </v-card>
       </v-col>
     </v-row>
@@ -60,20 +58,28 @@ export default {
 }
 </script>
 
-
 <style>
 .v-card {
+  margin-top: 5%;
   text-align: center;
   padding: 30px;
   background-color: #f9f9f9;
 }
 .flex-container {
   display: flex;
-  justify-content: center; 
+  justify-content: space-around; 
   flex-wrap: wrap;
 }
+.flex-column-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .flex-item {
-  flex: auto; 
-  margin: 10px; 
+  margin: 10px;
+}
+.image-item {
+  max-width: 100px;
+  margin-top: 10px;
 }
 </style>

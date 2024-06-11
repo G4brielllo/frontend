@@ -2,7 +2,7 @@
     <v-container>
       <v-card class="elevation-4">
         <v-toolbar color="primary" dark>
-          <v-toolbar-title>Add Project</v-toolbar-title>
+          <v-toolbar-title>Dodaj Projekt</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card-text>
