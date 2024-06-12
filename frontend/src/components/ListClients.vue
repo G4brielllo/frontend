@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import axios from '@/axios';
+
 export default {
   name: 'ListClients',
   data() {
@@ -42,37 +44,52 @@ export default {
       search: '',
       menu: false,
       menuDate: '',
+      valid: false,
       headers: [
-        { text: 'L.p.', align: 'start', sortable: false, value: 'lp' },
+        { text: 'L.p.', value: 'id' },
+        // align: 'start', sortable: false, value: 'lp'
         { text: 'Nazwa', value: 'name' },
         { text: 'Logotyp', value: 'logo' },
         { text: 'Kraj', value: 'country' },
-        { text: 'Data dodania', value: 'dateAdded' },
+        { text: 'Data dodania', value: 'created_at' },
         { text: 'Akcje', value: 'actions', sortable: false },
       ],
-      clients: [
-        { lp: 1, name: 'Client 1', logo: 'logo1.png', country: 'Poland', dateAdded: '2024-06-01', actions: 'edit/delete' },
-        { lp: 2, name: 'Client 2', logo: 'logo2.png', country: 'Germany', dateAdded: '2024-05-30', actions: 'edit/delete' },
-
-      ],
+      clients: [],
     };
   },
   methods: {
+    async fetchClients() {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/clients');
+        this.clients = response.data;
+        
+      } catch (error) {
+        console.error('Error fetching clients:', error);
+      }
+    },
     returnToHomePage(){
       this.$router.push('/returnToHomePage');
     },
     addClient(){
       this.$router.push('/addClient');
     },
-    editItem(item) {
-      console.log('Edytuj:', item);
+
+    
+    async editItem(item) {
+      console.log('Edit:', item);
     },
-    deleteItem(item) {
-      const index = this.clients.indexOf(item);
-      if (index !== -1) {
-        this.clients.splice(index, 1);
+    async deleteItem(item) {
+      try {
+        await axios.delete(`/clients/${item.id}`);
+        this.fetchClients(); // Refresh the client list
+      } catch (error) {
+        console.error('Error deleting client:', error);
       }
     },
+   
+  },
+  created() {
+    this.fetchClients();
   },
 };
 </script>
@@ -117,8 +134,9 @@ export default {
   border-radius: 8px;
   overflow: hidden;
 }
-.operation-buttons{
-  justify-self: left,
-  margin-right = 10px;
+
+.operation-buttons {
+  justify-self: left;
+  margin-right: 10px;
 }
 </style>

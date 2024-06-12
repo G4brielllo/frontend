@@ -59,11 +59,11 @@
       cancelProjectAdding(){
       this.$router.push('/cancelProjectAdding');
       },
-      addProject(){
-        this.$router.push('/addClient');
-      },
+      // addProject(){
+      //   // this.$router.push('/addClient');
+      // },
 
-      addProject1() {
+      addProject() {
         if (this.$refs.form.validate()) {
           console.log('Added project:', this.project);
           this.clearForm();
