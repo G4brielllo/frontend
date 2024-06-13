@@ -36,8 +36,10 @@
 </template>
 
 <script>
+import axios from '@/axios';
 
 export default {
+  name: 'ListProjects',
   data() {
     return {
       search: '',
@@ -47,34 +49,55 @@ export default {
       headers: [
         { text: 'L.p.', align: 'start', value: 'id' },
         { text: 'Nazwa', value: 'name' },
-        { text: 'Klient', value: 'client' },
+        { text: 'Klient', value: 'client_name' }, 
         { text: 'Szacunkowa wartość', value: 'estimation', sortable: false },
-        { text: 'Data dodania', value: 'dateAdded' },
+        { text: 'Data dodania', value: 'created_at' }, 
         { text: 'Akcje', value: 'actions', sortable: false },
       ],
-      clients: [
-        { id: 1, name: 'Klient 1' },
-        { id: 2, name: 'Klient 2' },
-        { id: 3, name: 'Klient 3' },
-      ],
-      projects: [
-        { id: 1, name: 'Projekt 1', client: 'Klient 1', estimation: 2500, dateAdded: '2024-06-01' },
-        { id: 2, name: 'Projekt 2', client: 'Klient 2', estimation: 3500, dateAdded: '2024-06-02' },
-        { id: 3, name: 'Projekt 3', client: 'Klient 3', estimation: 4500, dateAdded: '2024-06-03' },
-      ],
+      clients: [],
+      projects: [],
     };
   },
+  created() {
+    this.fetchProjects();
+  },
   methods: {
-    returnToHomePage(){
+    async fetchProjects() {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/projects');
+    console.log('Projects:', response.data);
+    
+    this.projects = response.data.map(project => ({
+      id: project.id,
+      name: project.name,
+      client_name: project.client ? project.client.name : 'Brak klienta',
+      estimation: project.estimation,
+      created_at: project.created_at,
+    }));
+    
+  } catch (error) {
+    console.error('Error fetching projects:', error);
+  }
+},
+
+    async deleteProject(item) {
+      try {
+        await axios.delete(`/projects/${item.id}`);
+        this.fetchProjects(); 
+      } catch (error) {
+        console.error('Error deleting project:', error);
+      }
+    },
+    returnToHomePage() {
       this.$router.push('/returnToHomePage');
     },
-    addProject(){
+    addProject() {
       this.$router.push('/addProject');
     },
     editProject(project) {
       console.log('Edytuj projekt:', project);
     },
-    deleteProject(project) {
+    deleteProject1(project) {
       console.log('Usuń projekt:', project);
     },
   },
