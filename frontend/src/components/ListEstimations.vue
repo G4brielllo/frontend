@@ -30,8 +30,8 @@ export default {
       headers: [
         { text: 'L.p.', align: 'start', sortable: false, value: 'id' },
         { text: 'Nazwa', value: 'name' },
-        { text: 'Projekt', value: 'project.name' }, // Przykładowe wykorzystanie relacji
-        { text: 'Klient', value: 'project.client.name' }, // Przykładowe wykorzystanie relacji
+        { text: 'Projekt', value: 'project.name' }, 
+        { text: 'Klient', value: 'project.client.name' },
         { text: 'Wycena', value: 'type' },
         { text: 'Data dodania', value: 'created_at' },
         { text: 'Akcje', value: 'actions', sortable: false },

@@ -29,7 +29,7 @@
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-btn color="primary" @click="addClient" :disabled="!valid">Zapisz</v-btn>
+        <v-btn color="black" @click="addClient" :disabled="!valid">Zapisz</v-btn>
         <v-btn @click="cancelClientAdding">Anuluj</v-btn>
       </v-card-actions>
     </v-card>
@@ -55,32 +55,42 @@ export default {
   },
   methods: {
     async addClient() {
-  try {
-    const formData = new FormData();
-    formData.append('name', this.client.name);
-    formData.append('description', this.client.description);
-    formData.append('logo', this.client.logo);
-    formData.append('country', this.client.country);
-    formData.append('email', this.client.email);
-    
-    // Dodanie klienta do bazy danych
-    const response = await axios.post('http://127.0.0.1:8000/api/clients', formData);
+      try {
+        const formData = new FormData();
+        formData.append('name', this.client.name);
+        formData.append('description', this.client.description);
+        formData.append('logo', this.client.logo);
+        formData.append('country', this.client.country);
+        formData.append('email', this.client.email);
 
-    // Jeśli dodanie klienta powiodło się, przekieruj na stronę główną
-    if (response.status === 201) {
-      this.$router.push('/');
-    } else {
-      console.error('Error adding client:', response.data);
-    }
-  } catch (error) {
-    console.error('Error adding client:', error);
-  }
-},
+        const response = await axios.post('http://127.0.0.1:8000/api/clients', formData);
 
-    cancelClientAdding(){
+        if (response.status === 201) {
+          this.$router.push('/');
+        } else {
+          console.error('Error adding client:', response.data);
+        }
+      } catch (error) {
+        console.error('Error adding client:', error);
+      }
+    },
+
+    cancelClientAdding() {
       this.$router.push('/');
-    }
-  }
+    },
+
+    async convertToBase64() {
+      const file = this.client.logo;
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.client.logo = e.target.result; // Przypisanie danych base64 do pola logo
+      };
+
+      reader.readAsDataURL(file); // Konwersja zdjęcia do base64
+    },
+  },
 };
 </script>
 

@@ -74,8 +74,13 @@ export default {
       this.$router.push('/addClient');
     },
 
+    editItem(){
+      this.$router.push('/addClient');
+    },
+
     
-    async editItem(item) {
+    async editItem1(item) {
+
       console.log('Edit:', item);
     },
     async deleteItem(item) {
