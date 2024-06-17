@@ -31,7 +31,7 @@ export default {
         { text: 'L.p.', align: 'start', sortable: false, value: 'id' },
         { text: 'Nazwa', value: 'name' },
         { text: 'Projekt', value: 'project.name' }, 
-        { text: 'Klient', value: 'project.client.name' },
+        { text: 'Klient', value: 'client.name' }, // Zmiana na client.name
         { text: 'Wycena', value: 'type' },
         { text: 'Data dodania', value: 'created_at' },
         { text: 'Akcje', value: 'actions', sortable: false },
@@ -46,9 +46,24 @@ export default {
     async fetchEstimations() {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/estimations');
-        this.estimations = response.data;
+        this.estimations = response.data.map(estimation => ({
+          id: estimation.id,
+          name: estimation.name,
+          type: estimation.type,
+          created_at: this.formatDate(estimation.created_at),
+          project: estimation.project, 
+          client: estimation.project.client, 
+        }));
       } catch (error) {
         console.error('Error fetching estimations:', error);
+      }
+    },
+    async deleteItem(item) {
+      try {
+        await axios.delete(`http://127.0.0.1:8000/api/estimations/${item.id}`);
+        this.estimations = this.estimations.filter(estimation => estimation.id !== item.id);
+      } catch (error) {
+        console.error('Error deleting estimation:', error);
       }
     },
     returnToHomePage() {
@@ -60,9 +75,9 @@ export default {
     editItem(item) {
       console.log('Edytuj:', item);
     },
-    deleteItem(item) {
-      console.log('Usuń:', item);
-      // Możesz dodać logikę usuwania elementu
+    formatDate(date) {
+      const options = { day: 'numeric', month: 'long', year: 'numeric' };
+      return new Date(date).toLocaleDateString('pl-PL', options);
     },
   },
 };

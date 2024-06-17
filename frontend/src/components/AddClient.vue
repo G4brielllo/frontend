@@ -1,7 +1,8 @@
 <template>
+  <v-app>
   <v-container>
     <v-card class="elevation-4">
-      <v-toolbar color="primary" dark>
+      <v-toolbar color="black" dark>
         <v-toolbar-title>Dodaj klienta</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
@@ -29,11 +30,12 @@
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-btn color="black" @click="addClient" :disabled="!valid">Zapisz</v-btn>
+        <v-btn color="gray" @click="addClient" :disabled="!valid">Zapisz</v-btn>
         <v-btn @click="cancelClientAdding">Anuluj</v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
+  </v-app>
 </template>
 
 <script>
@@ -85,10 +87,10 @@ export default {
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        this.client.logo = e.target.result; // Przypisanie danych base64 do pola logo
+        this.client.logo = e.target.result;
       };
 
-      reader.readAsDataURL(file); // Konwersja zdjęcia do base64
+      reader.readAsDataURL(file);
     },
   },
 };
