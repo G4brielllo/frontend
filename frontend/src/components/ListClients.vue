@@ -23,6 +23,9 @@
         </v-card-text>
         <v-card-text>
           <v-data-table :headers="headers" :items="filteredClients" :search="search" class="compact-data-table">
+            <template v-slot:[`item.logo`]="{ item }">
+              <v-img :src="item.logo" height="100" width="100" contain class="rounded-image"></v-img>
+            </template>
             <template v-slot:[`item.actions`]="{ item }">
               <v-btn color="gray" @click="editItem(item)" text class="compact-btn">Edytuj</v-btn>
               <v-btn color="gray" @click="deleteItem(item)" text class="compact-btn">Usuń</v-btn>
@@ -174,5 +177,9 @@ export default {
 .operation-buttons {
   justify-self: left;
   margin-right: 10px;
+}
+
+.rounded-image {
+  border-radius: 50%;
 }
 </style>
