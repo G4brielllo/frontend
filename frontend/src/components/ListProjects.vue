@@ -64,20 +64,18 @@ export default {
     filteredProjects() {
       let filtered = this.projects;
 
-      // Filtruj po wyszukiwanej wartości
       if (this.search) {
         const lowerCaseSearch = this.search.toLowerCase();
         filtered = filtered.filter(item =>
-          item.name.toLowerCase().includes(lowerCaseSearch)
+          item.name.toLowerCase().includes(lowerCaseSearch) ||
+          item.client_name.toLowerCase().includes(lowerCaseSearch)
         );
       }
 
-      // Filtruj po wybranym kliencie
       if (this.selectedClient) {
         filtered = filtered.filter(item => item.client_id === this.selectedClient);
       }
 
-      // Filtruj po wybranej dacie
       if (this.selectedDate) {
         const selectedDate = new Date(this.selectedDate);
         filtered = filtered.filter(item => {
@@ -100,10 +98,16 @@ export default {
           client_name: project.client ? project.client.name : 'Brak klienta',
           estimation: project.estimation,
           formatted_created_at: this.formatDate(project.created_at),
+          created_at: project.created_at,
         }));
       } catch (error) {
         console.error('Error fetching projects:', error);
       }
+    },
+
+    formatDate(date) {
+      const options = { day: 'numeric', month: 'short', year: 'numeric' };
+      return new Date(date).toLocaleDateString('pl-PL', options);
     },
 
     async fetchClients() {
@@ -118,7 +122,7 @@ export default {
     async deleteProject(item) {
       try {
         await axios.delete(`http://127.0.0.1:8000/api/projects/${item.id}`);
-        this.fetchProjects(); 
+        this.fetchProjects();
       } catch (error) {
         console.error('Error deleting project:', error);
       }
@@ -139,11 +143,6 @@ export default {
     deleteProject1(project) {
       console.log('Usuń projekt:', project);
     },
-
-    formatDate(date) {
-      const options = { day: 'numeric', month: 'short', year: 'numeric' };
-      return new Date(date).toLocaleDateString('pl-PL', options);
-    },
   },
 
   created() {
@@ -154,4 +153,11 @@ export default {
 </script>
 
 <style scoped>
+.compact-card {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin: 20px;
+}
 </style>

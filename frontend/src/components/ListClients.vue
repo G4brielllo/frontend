@@ -6,21 +6,13 @@
           <v-toolbar-title>Lista klientów</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-text-field v-model="search" append-icon="mdi-magnify" label="Wyszukaj" single-line hide-details class="compact-search-field"></v-text-field>
+          <v-menu v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y full-width min-width="290px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field v-model="menuDate" label="Wybierz datę" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" clearable hide-details class="compact-date-field"></v-text-field>
+            </template>
+            <v-date-picker v-model="menuDate" no-title @input="menu = false"></v-date-picker>
+          </v-menu>
         </v-toolbar>
-        <v-card-text>
-          <v-form ref="form" v-model="valid">
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-menu v-model="menu" :close-on-content-click="false" :return-value.sync="menuDate" transition="scale-transition" offset-y full-width min-width="290px">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field v-model="menuDate" label="Wybierz datę" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" class="compact-date-field"></v-text-field>
-                  </template>
-                  <v-date-picker v-model="menuDate" no-title @input="menu = false"></v-date-picker>
-                </v-menu>
-              </v-col>
-            </v-row>
-          </v-form>
-        </v-card-text>
         <v-card-text>
           <v-data-table :headers="headers" :items="filteredClients" :search="search" class="compact-data-table">
             <template v-slot:[`item.logo`]="{ item }">
@@ -48,8 +40,7 @@ export default {
     return {
       search: '',
       menu: false,
-      menuDate: '',
-      valid: false,
+      menuDate: null,
       headers: [
         { text: 'L.p.', value: 'id' },
         { text: 'Nazwa', value: 'name' },
@@ -64,22 +55,17 @@ export default {
   computed: {
     filteredClients() {
       let filtered = this.clients;
-
       if (this.search) {
         const lowerCaseSearch = this.search.toLowerCase();
-        filtered = filtered.filter(client =>
-          client.name.toLowerCase().includes(lowerCaseSearch)
-        );
+        filtered = filtered.filter(client => client.name.toLowerCase().includes(lowerCaseSearch));
       }
-
       if (this.menuDate) {
         const selectedDate = new Date(this.menuDate);
         filtered = filtered.filter(client => {
           const clientDate = new Date(client.created_at);
-          return clientDate.toDateString() === selectedDate.toDateString();
+          return this.compareDates(clientDate, selectedDate);
         });
       }
-
       return filtered;
     },
   },
@@ -115,15 +101,28 @@ export default {
     },
 
     returnToHomePage() {
-      this.$router.push('/returnToHomePage');
+      this.$router.push('/'); 
     },
 
     addClient() {
-      this.$router.push('/addClient');
+      this.$router.push('/addClient'); 
     },
 
     editItem(item) {
-      console.log('Edytuj klienta:', item);
+      this.$router.push({ path: '/addClient', query: { 
+          id: item.id, 
+          name: item.name, 
+          email: item.email, 
+          description: item.description,
+          logo: item.logo, 
+          country: item.country 
+        } });
+    },
+
+    compareDates(date1, date2) {
+      return date1.getFullYear() === date2.getFullYear() &&
+             date1.getMonth() === date2.getMonth() &&
+             date1.getDate() === date2.getDate();
     },
   },
 

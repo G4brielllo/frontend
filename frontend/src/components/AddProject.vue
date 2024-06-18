@@ -55,7 +55,8 @@ export default {
     };
   },
   created() {
-    this.fetchProjects();
+    // this.fetchProjects();
+    this.fetchClients();
   },
   methods: {
     async fetchClients() {

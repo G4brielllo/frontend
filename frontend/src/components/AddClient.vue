@@ -3,7 +3,7 @@
     <v-container>
       <v-card class="elevation-4">
         <v-toolbar color="black" dark>
-          <v-toolbar-title>Dodaj klienta</v-toolbar-title>
+          <v-toolbar-title>{{ client.id ? 'Edytuj klienta' : 'Dodaj klienta' }}</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card-text>
@@ -30,7 +30,7 @@
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="gray" @click="addClient" :disabled="!valid">Zapisz</v-btn>
+          <v-btn color="gray" @click="saveClient" :disabled="!valid">{{ client.id ? 'Zapisz zmiany' : 'Dodaj klienta' }}</v-btn>
           <v-btn @click="cancelClientAdding">Anuluj</v-btn>
         </v-card-actions>
       </v-card>
@@ -46,6 +46,7 @@ export default {
     return {
       valid: true,
       client: {
+        id: null,
         name: '',
         description: '',
         logo: null,
@@ -59,11 +60,21 @@ export default {
   },
   watch: {
     image: function (newVal) {
-      if(newVal) {
+      if (newVal) {
         this.createBase64Image(newVal);
       } else {
         this.base64 = null;
       }
+    }
+  },
+  created() {
+    if (this.$route.query.id) {
+      this.client.id = this.$route.query.id;
+      this.client.name = this.$route.query.name;
+      this.client.email = this.$route.query.email;
+      this.client.description = this.$route.query.description;
+      this.client.logo = this.$route.query.logo;
+      this.client.country = this.$route.query.country;
     }
   },
   methods: {
@@ -72,28 +83,33 @@ export default {
       reader.onload = (event) => {
         this.base64 = event.target.result;
         this.client.logo = this.base64;
-      }
+      };
       reader.readAsDataURL(file);
     },
 
-    async addClient() {
+    async saveClient() {
       try {
         const formData = new FormData();
         formData.append('name', this.client.name);
         formData.append('description', this.client.description);
-        formData.append('logo', this.base64); 
+        formData.append('logo', this.base64);
         formData.append('country', this.client.country);
         formData.append('email', this.client.email);
 
-        const response = await axios.post('http://127.0.0.1:8000/api/clients', formData);
+        let response;
+        if (this.client.id) {
+          response = await axios.put(`http://127.0.0.1:8000/api/clients/${this.client.id}`, formData);
+        } else {
+          response = await axios.post('http://127.0.0.1:8000/api/clients', formData);
+        }
 
-        if (response.status === 201) {
+        if (response.status === 201 || response.status === 200) {
           this.$router.push('/');
         } else {
-          console.error('Error adding client:', response.data);
+          console.error('Error saving client:', response.data);
         }
       } catch (error) {
-        console.error('Error adding client:', error);
+        console.error('Error saving client:', error);
       }
     },
 
