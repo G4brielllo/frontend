@@ -46,6 +46,7 @@ export default {
   data() {
     return {
       project: {
+        id: null,
         name: '',
         description: '',
         client: null,
@@ -55,16 +56,25 @@ export default {
     };
   },
   created() {
-    // this.fetchProjects();
+    if (this.$route.query.id) {
+      const projectId = this.$route.query.id;
+      this.fetchProjectDetails(projectId);
+    }
     this.fetchClients();
   },
   methods: {
-    async fetchClients() {
+    async fetchProjectDetails(projectId) {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/clients');
-        this.clients = response.data;
+        const response = await axios.get(`http://127.0.0.1:8000/api/projects/${projectId}`);
+        const projectData = response.data;
+
+        this.project.id = projectData.id;
+        this.project.name = projectData.name;
+        this.project.description = projectData.description;
+        this.project.client = projectData.client_id;
+
       } catch (error) {
-        console.error('Error fetching clients:', error);
+        console.error('Error fetching project details:', error);
       }
     },
     async addProject() {
@@ -88,14 +98,49 @@ export default {
         }
       }
     },
+
+    async saveProject() {
+      try {
+        const formData = new FormData();
+        formData.append('name', this.project.name);
+        formData.append('description', this.project.description);
+        formData.append('client_id', this.project.client);
+
+        let response;
+        if (this.project.id) {
+          response = await axios.put(`http://127.0.0.1:8000/api/projects/${this.project.id}`, formData);
+        } else {
+          response = await axios.post('http://127.0.0.1:8000/api/projects', formData);
+        }
+
+        if (response.status === 201 || response.status === 200) {
+          this.$router.push('/');
+        } else {
+          console.error('Error saving project:', response.data);
+        }
+      } catch (error) {
+        console.error('Error saving project:', error);
+      }
+    },
+
     cancelProjectAdding() {
       this.clearForm();
       this.$router.push('/');
     },
+
     clearForm() {
       this.project.name = '';
       this.project.description = '';
       this.project.client = null;
+    },
+
+    async fetchClients() {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/clients');
+        this.clients = response.data;
+      } catch (error) {
+        console.error('Error fetching clients:', error);
+      }
     },
   },
 };

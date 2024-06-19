@@ -14,7 +14,7 @@
           </template>
         </v-data-table>
       </v-card-text>
-      <v-btn class="operation-buttons" @click="addEstimation">Dodaj</v-btn>
+      <v-btn class="operation-buttons" @click="goToAddEstimation">Dodaj</v-btn>
       <v-btn class="operation-buttons" @click="returnToHomePage">Wróć</v-btn>
     </v-card>
   </v-container>
@@ -31,7 +31,7 @@ export default {
         { text: 'L.p.', align: 'start', sortable: false, value: 'id' },
         { text: 'Nazwa', value: 'name' },
         { text: 'Projekt', value: 'project.name' }, 
-        { text: 'Klient', value: 'client.name' }, // Zmiana na client.name
+        { text: 'Klient', value: 'client.name' },
         { text: 'Wycena', value: 'type' },
         { text: 'Data dodania', value: 'created_at' },
         { text: 'Akcje', value: 'actions', sortable: false },
@@ -67,13 +67,13 @@ export default {
       }
     },
     returnToHomePage() {
-      this.$router.push('/returnToHomePage');
+      this.$router.push('/');
     },
-    addEstimation() {
+    goToAddEstimation() {
       this.$router.push('/addEstimation');
     },
     editItem(item) {
-      console.log('Edytuj:', item);
+      this.$router.push({ path: '/addEstimation', query: { id: item.id } });
     },
     formatDate(date) {
       const options = { day: 'numeric', month: 'long', year: 'numeric' };

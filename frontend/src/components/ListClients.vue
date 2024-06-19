@@ -111,11 +111,6 @@ export default {
     editItem(item) {
       this.$router.push({ path: '/addClient', query: { 
           id: item.id, 
-          name: item.name, 
-          email: item.email, 
-          description: item.description,
-          logo: item.logo, 
-          country: item.country 
         } });
     },
 

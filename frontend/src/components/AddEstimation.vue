@@ -2,8 +2,8 @@
   <v-app>
     <v-container>
       <v-card class="elevation-4 compact-card">
-        <v-toolbar color="primary" dark>
-          <v-toolbar-title>Dodaj wycenę</v-toolbar-title>
+        <v-toolbar color="black" dark>
+          <v-toolbar-title>{{ isNewEstimation ? 'Dodaj wycenę' : 'Edytuj wycenę' }}</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card-text>
@@ -43,14 +43,14 @@
                   </v-radio-group>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-text-field v-model="estimation.amount" label="Wycena" dense required></v-text-field> <!-- Poprawiono v-model -->
+                  <v-text-field v-model="estimation.amount" label="Wycena" dense required></v-text-field>
                 </v-col>
               </v-row>
             </v-container>
           </v-form>
         </v-card-text>
         <v-card-actions class="compact-actions">
-          <v-btn color="gray" @click="validateForm" small>Dodaj</v-btn>
+          <v-btn color="gray" @click="saveEstimation" small>{{ isNewEstimation ? 'Dodaj' : 'Zapisz' }}</v-btn>
           <v-btn color="gray" @click="cancelEstimationAdding" small>Anuluj</v-btn>
         </v-card-actions>
       </v-card>
@@ -69,15 +69,21 @@ export default {
         description: '',
         project_id: null,
         date: new Date().toISOString().substr(0, 10),
-        type: 'godzinowa',
+        type: 'hourly',
         amount: ''
       },
       projects: [],
-      valid: true
+      valid: true,
+      isNewEstimation: true, 
     };
   },
   created() {
     this.fetchProjects();
+
+    if (this.$route.query.id) {
+      this.isNewEstimation = false;
+      this.fetchEstimationDetails(this.$route.query.id);
+    }
   },
   methods: {
     async fetchProjects() {
@@ -88,29 +94,68 @@ export default {
         console.error('Error fetching projects:', error);
       }
     },
-    async cancelEstimationAdding() {
-      this.$router.push('/cancelEstimationAdding');
+    async fetchEstimationDetails(estimationId) {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/estimations/${estimationId}`);
+        const estimationData = response.data;
+
+        this.estimation.name = estimationData.name;
+        this.estimation.description = estimationData.description;
+        this.estimation.project_id = estimationData.project_id;
+        this.estimation.date = this.formatDate(estimationData.date);
+        this.estimation.type = estimationData.type;
+        this.estimation.amount = estimationData.amount;
+      } catch (error) {
+        console.error('Error fetching estimation details:', error);
+      }
     },
-    async validateForm() {
+    async saveEstimation() {
       if (this.$refs.form.validate()) {
         try {
-          const response = await axios.post('http://127.0.0.1:8000/api/estimations', this.estimation);
-          console.log('Dodano estymację:', response.data);
-          this.$router.push('/');
+          let response;
+          if (this.isNewEstimation) {
+            response = await axios.post('http://127.0.0.1:8000/api/estimations', this.estimation);
+          } else {
+            response = await axios.put(`http://127.0.0.1:8000/api/estimations/${this.$route.query.id}`, this.estimation);
+          }
+
+          if (response.status === 201 || response.status === 200) {
+            console.log('Estimation saved successfully:', response.data);
+            this.clearForm();
+            this.$router.push('/');
+          } else {
+            console.error('Error saving estimation:', response.data);
+          }
         } catch (error) {
-          console.error('Error adding estimation:', error);
-          
+          console.error('Error saving estimation:', error);
         }
       }
-    }
-  }
+    },
+    cancelEstimationAdding() {
+      this.clearForm();
+      this.$router.push('/');
+    },
+    clearForm() {
+      this.estimation.name = '';
+      this.estimation.description = '';
+      this.estimation.project_id = null;
+      this.estimation.date = new Date().toISOString().substr(0, 10);
+      this.estimation.type = 'hourly';
+      this.estimation.amount = '';
+    },
+    formatDate(date) {
+      const options = { day: 'numeric', month: 'long', year: 'numeric' };
+      return new Date(date).toLocaleDateString('pl-PL', options);
+    },
+  },
 };
 </script>
 
 <style scoped>
 .compact-card {
-  max-height: 90%;
+  max-height: 100%;
   max-width: 80%;
+  border-radius: 12px;
   margin: auto;
   padding: 16px;
 }

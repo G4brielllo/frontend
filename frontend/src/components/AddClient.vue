@@ -20,7 +20,7 @@
                   <v-textarea v-model="client.description" label="Opis" rows="3" required></v-textarea>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-file-input v-model="image" label="Logo" accept="image/*" required @change="createBase64Image"></v-file-input>
+                  <v-file-input v-model="image" label="Logo" accept="image/*" @change="createBase64Image"></v-file-input>
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-select v-model="client.country" :items="countries" label="Kraj" required></v-select>
@@ -55,36 +55,49 @@ export default {
       },
       countries: ['Poland', 'Germany', 'France', 'Italy', 'Spain'],
       image: null,
-      base64: null
+      base64: null,
     };
-  },
-  watch: {
-    image: function (newVal) {
-      if (newVal) {
-        this.createBase64Image(newVal);
-      } else {
-        this.base64 = null;
-      }
-    }
   },
   created() {
     if (this.$route.query.id) {
-      this.client.id = this.$route.query.id;
-      this.client.name = this.$route.query.name;
-      this.client.email = this.$route.query.email;
-      this.client.description = this.$route.query.description;
-      this.client.logo = this.$route.query.logo;
-      this.client.country = this.$route.query.country;
+      const clientId = this.$route.query.id;
+      this.fetchClientDetails(clientId);
     }
   },
   methods: {
-    createBase64Image(file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        this.base64 = event.target.result;
-        this.client.logo = this.base64;
-      };
-      reader.readAsDataURL(file);
+    async fetchClientDetails(clientId) {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/clients/${clientId}`);
+        const clientData = response.data;
+
+        
+        this.client.id = clientData.id;
+        this.client.name = clientData.name;
+        this.client.email = clientData.email;
+        this.client.description = clientData.description;
+        this.client.country = clientData.country;
+        this.client.logo = clientData.logo; 
+
+      
+        if (this.isImageUrl(clientData.logo)) {
+          await this.fetchImageUrl(clientData.logo);
+        }
+      } catch (error) {
+        console.error('Error fetching client details:', error);
+      }
+    },
+
+    async fetchImageUrl(url) {
+      try {
+        const response = await axios.get(url, { responseType: 'blob' });
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          this.base64 = event.target.result;
+        };
+        reader.readAsDataURL(response.data);
+      } catch (error) {
+        console.error('Error fetching image URL:', error);
+      }
     },
 
     async saveClient() {
@@ -92,9 +105,12 @@ export default {
         const formData = new FormData();
         formData.append('name', this.client.name);
         formData.append('description', this.client.description);
-        formData.append('logo', this.base64);
         formData.append('country', this.client.country);
         formData.append('email', this.client.email);
+
+        if (this.image) {
+          formData.append('logo', this.base64);
+        }
 
         let response;
         if (this.client.id) {
@@ -110,15 +126,52 @@ export default {
         }
       } catch (error) {
         console.error('Error saving client:', error);
+        if (error.response && error.response.status === 401) {
+          console.error('Unauthorized access. Please check your credentials.');
+        }
       }
     },
 
     cancelClientAdding() {
       this.$router.push('/');
     },
+
+    createBase64Image(file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        this.base64 = event.target.result;
+        this.client.logo = this.base64;
+      };
+      reader.readAsDataURL(file);
+    },
+
+    isImageUrl(url) {
+      return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
+    },
+
+    async updateClient() {
+      try {
+        const formData = new FormData();
+        formData.append('name', this.client.name);
+        formData.append('description', this.client.description);
+        formData.append('country', this.client.country);
+        formData.append('email', this.client.email);
+
+        if (this.image) {
+          formData.append('logo', this.base64);
+        }
+
+        const response = await axios.put(`http://127.0.0.1:8000/api/clients/${this.client.id}`, formData);
+
+        if (response.status === 200) {
+          this.$router.push('/');
+        } else {
+          console.error('Error updating client:', response.data);
+        }
+      } catch (error) {
+        console.error('Error updating client:', error);
+      }
+    },
   },
 };
 </script>
-
-<style scoped>
-</style>

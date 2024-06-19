@@ -53,7 +53,7 @@ export default {
         { text: 'Nazwa', value: 'name' },
         { text: 'Klient', value: 'client_name' },
         { text: 'Szacunkowa wartość', value: 'estimation', sortable: false },
-        { text: 'Data dodania', value: 'formatted_created_at' }, // Zmieniono na formatted_created_at
+        { text: 'Data dodania', value: 'formatted_created_at' }, 
         { text: 'Akcje', value: 'actions', sortable: false },
       ],
       clients: [],
@@ -137,7 +137,7 @@ export default {
     },
 
     editProject(project) {
-      console.log('Edytuj projekt:', project);
+      this.$router.push({ path: '/addProject', query: { id: project.id } });
     },
 
     deleteProject1(project) {
