@@ -3,7 +3,9 @@
     <v-container>
       <v-card class="elevation-4">
         <v-toolbar color="black" dark>
-          <v-toolbar-title>{{ client.id ? 'Edytuj klienta' : 'Dodaj klienta' }}</v-toolbar-title>
+          <v-toolbar-title>{{
+            client.id ? "Edytuj klienta" : "Dodaj klienta"
+          }}</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card-text>
@@ -11,26 +13,58 @@
             <v-container>
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field v-model="client.name" label="Nazwa" required></v-text-field>
+                  <v-text-field
+                    v-model="client.name"
+                    label="Nazwa"
+                    required
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-text-field v-model="client.email" label="Email" required></v-text-field>
+                  <v-text-field
+                    v-model="client.email"
+                    label="Email"
+                    required
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                  <v-textarea v-model="client.description" label="Opis" rows="3" required></v-textarea>
+                  <v-textarea
+                    v-model="client.description"
+                    label="Opis"
+                    rows="3"
+                    required
+                  ></v-textarea>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-file-input v-model="image" label="Logo" accept="image/*" @change="createBase64Image"></v-file-input>
+                  <v-file-input
+                    v-model="image"
+                    label="Logo"
+                    accept="image/*"
+                    @change="createBase64Image"
+                  ></v-file-input>
+                  <div v-if="client.logo">
+                    <img
+                      :src="client.logo"
+                      alt="Client Logo"
+                      style="max-width: 100px; max-height: 100px"
+                    />
+                  </div>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-select v-model="client.country" :items="countries" label="Kraj" required></v-select>
+                  <v-select
+                    v-model="client.country"
+                    :items="countries"
+                    label="Kraj"
+                    required
+                  ></v-select>
                 </v-col>
               </v-row>
             </v-container>
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="gray" @click="saveClient" :disabled="!valid">{{ client.id ? 'Zapisz zmiany' : 'Dodaj klienta' }}</v-btn>
+          <v-btn color="gray" @click="saveClient" :disabled="!valid">{{
+            client.id ? "Zapisz zmiany" : "Dodaj klienta"
+          }}</v-btn>
           <v-btn @click="cancelClientAdding">Anuluj</v-btn>
         </v-card-actions>
       </v-card>
@@ -39,7 +73,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   data() {
@@ -47,13 +81,13 @@ export default {
       valid: true,
       client: {
         id: null,
-        name: '',
-        description: '',
+        name: "",
+        description: "",
         logo: null,
-        country: '',
-        email: '',
+        country: "",
+        email: "",
       },
-      countries: ['Poland', 'Germany', 'France', 'Italy', 'Spain'],
+      countries: ["Poland", "Germany", "France", "Italy", "Spain"],
       image: null,
       base64: null,
     };
@@ -67,73 +101,85 @@ export default {
   methods: {
     async fetchClientDetails(clientId) {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/clients/${clientId}`);
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/clients/${clientId}`
+        );
         const clientData = response.data;
 
-        
         this.client.id = clientData.id;
         this.client.name = clientData.name;
         this.client.email = clientData.email;
         this.client.description = clientData.description;
         this.client.country = clientData.country;
-        this.client.logo = clientData.logo; 
+        this.client.logo = clientData.logo;
 
-      
+        console.log("Dane:", response);
+
         if (this.isImageUrl(clientData.logo)) {
           await this.fetchImageUrl(clientData.logo);
         }
       } catch (error) {
-        console.error('Error fetching client details:', error);
+        console.error("Error fetching client details:", error);
       }
     },
 
     async fetchImageUrl(url) {
       try {
-        const response = await axios.get(url, { responseType: 'blob' });
+        const response = await axios.get(url, { responseType: "blob" });
         const reader = new FileReader();
         reader.onload = (event) => {
           this.base64 = event.target.result;
         };
         reader.readAsDataURL(response.data);
       } catch (error) {
-        console.error('Error fetching image URL:', error);
+        console.error("Error fetching image URL:", error);
       }
     },
 
     async saveClient() {
       try {
         const formData = new FormData();
-        formData.append('name', this.client.name);
-        formData.append('description', this.client.description);
-        formData.append('country', this.client.country);
-        formData.append('email', this.client.email);
+        formData.append("name", this.client.name);
+        formData.append("description", this.client.description);
+        formData.append("country", this.client.country);
+        formData.append("email", this.client.email);
 
         if (this.image) {
-          formData.append('logo', this.base64);
+          formData.append("logo", this.base64);
         }
+
+        formData.forEach((value, key) => {
+          console.log(`${key}: ${value}`);
+        });
 
         let response;
         if (this.client.id) {
-          response = await axios.put(`http://127.0.0.1:8000/api/clients/${this.client.id}`, formData);
+          response = await axios.put(
+            `http://127.0.0.1:8000/api/clients/${this.client.id}`,
+            formData
+          );
         } else {
-          response = await axios.post('http://127.0.0.1:8000/api/clients', formData);
+          response = await axios.post(
+            "http://127.0.0.1:8000/api/clients",
+            formData
+          );
         }
 
         if (response.status === 201 || response.status === 200) {
-          this.$router.push('/');
+          this.$router.push("/");
         } else {
-          console.error('Error saving client:', response.data);
+          console.error("Error saving client:", response.data);
         }
       } catch (error) {
-        console.error('Error saving client:', error);
+        console.error("Error saving client:", error);
         if (error.response && error.response.status === 401) {
-          console.error('Unauthorized access. Please check your credentials.');
+          console.error("Unauthorized access. Please check your credentials.");
         }
       }
     },
 
     cancelClientAdding() {
-      this.$router.push('/');
+      this.$router.push("/");
     },
 
     createBase64Image(file) {
@@ -152,24 +198,27 @@ export default {
     async updateClient() {
       try {
         const formData = new FormData();
-        formData.append('name', this.client.name);
-        formData.append('description', this.client.description);
-        formData.append('country', this.client.country);
-        formData.append('email', this.client.email);
+        formData.append("name", this.client.name);
+        formData.append("description", this.client.description);
+        formData.append("country", this.client.country);
+        formData.append("email", this.client.email);
 
         if (this.image) {
-          formData.append('logo', this.base64);
+          formData.append("logo", this.base64);
         }
 
-        const response = await axios.put(`http://127.0.0.1:8000/api/clients/${this.client.id}`, formData);
+        const response = await axios.put(
+          `http://127.0.0.1:8000/api/clients/${this.client.id}`,
+          formData
+        );
 
         if (response.status === 200) {
-          this.$router.push('/');
+          this.$router.push("/");
         } else {
-          console.error('Error updating client:', response.data);
+          console.error("Error updating client:", response.data);
         }
       } catch (error) {
-        console.error('Error updating client:', error);
+        console.error("Error updating client:", error);
       }
     },
   },

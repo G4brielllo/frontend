@@ -7,23 +7,58 @@
           <v-spacer></v-spacer>
           <v-row>
             <v-col cols="12" sm="6" md="4">
-              <v-text-field v-model="search" append-icon="mdi-magnify" label="Wyszukaj" single-line hide-details></v-text-field>
+              <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Wyszukaj"
+                single-line
+                hide-details
+              ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="4">
-              <v-autocomplete v-model="selectedClient" :items="clients" item-text="name" item-value="id" label="Wybierz klienta" clearable hide-details></v-autocomplete>
+              <v-autocomplete
+                v-model="selectedClient"
+                :items="clients"
+                item-text="name"
+                item-value="id"
+                label="Wybierz klienta"
+                clearable
+                hide-details
+              ></v-autocomplete>
             </v-col>
             <v-col cols="12" sm="6" md="4">
-              <v-menu v-model="datePicker" :close-on-content-click="false" transition="scale-transition" offset-y>
+              <v-menu
+                v-model="datePicker"
+                :close-on-content-click="false"
+                transition="scale-transition"
+                offset-y
+              >
                 <template v-slot:activator="{ on }">
-                  <v-text-field v-model="selectedDate" label="Wybierz datę" prepend-icon="mdi-calendar" readonly v-on="on" clearable hide-details></v-text-field>
+                  <v-text-field
+                    v-model="selectedDate"
+                    label="Wybierz datę"
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    v-on="on"
+                    clearable
+                    hide-details
+                  ></v-text-field>
                 </template>
-                <v-date-picker v-model="selectedDate" @input="datePicker = false"></v-date-picker>
+                <v-date-picker
+                  v-model="selectedDate"
+                  @input="datePicker = false"
+                ></v-date-picker>
               </v-menu>
             </v-col>
           </v-row>
         </v-toolbar>
         <v-card-text>
-          <v-data-table :headers="headers" :items="filteredProjects" :search="search" :item-key="'id'">
+          <v-data-table
+            :headers="headers"
+            :items="filteredProjects"
+            :search="search"
+            :item-key="'id'"
+          >
             <template v-slot:[`item.actions`]="{ item }">
               <v-btn color="gray" @click="editProject(item)" text>Edytuj</v-btn>
               <v-btn color="gray" @click="deleteProject(item)" text>Usuń</v-btn>
@@ -38,26 +73,31 @@
 </template>
 
 <script>
-import axios from '@/axios';
+import axios from "@/axios";
 
 export default {
-  name: 'ListProjects',
+  name: "ListProjects",
   data() {
     return {
-      search: '',
+      search: "",
       selectedClient: null,
       selectedDate: null,
       datePicker: false,
       headers: [
-        { text: 'L.p.', align: 'start', value: 'id' },
-        { text: 'Nazwa', value: 'name' },
-        { text: 'Klient', value: 'client_name' },
-        { text: 'Szacunkowa wartość', value: 'estimation', sortable: false },
-        { text: 'Data dodania', value: 'formatted_created_at' }, 
-        { text: 'Akcje', value: 'actions', sortable: false },
+        { text: "L.p.", align: "start", value: "id" },
+        { text: "Klient", value: "client_name" },
+        { text: "Nazwa Projektu", value: "name" },
+        {
+          text: "Szacunkowa Wartość",
+          value: "total_estimation",
+          sortable: false,
+        },
+        { text: "Data dodania", value: "formatted_created_at" },
+        { text: "Akcje", value: "actions", sortable: false },
       ],
       clients: [],
       projects: [],
+      estimations: [],
     };
   },
   computed: {
@@ -66,19 +106,22 @@ export default {
 
       if (this.search) {
         const lowerCaseSearch = this.search.toLowerCase();
-        filtered = filtered.filter(item =>
-          item.name.toLowerCase().includes(lowerCaseSearch) ||
-          item.client_name.toLowerCase().includes(lowerCaseSearch)
+        filtered = filtered.filter(
+          (item) =>
+            item.name.toLowerCase().includes(lowerCaseSearch) ||
+            item.client_name.toLowerCase().includes(lowerCaseSearch)
         );
       }
 
       if (this.selectedClient) {
-        filtered = filtered.filter(item => item.client_id === this.selectedClient);
+        filtered = filtered.filter(
+          (item) => item.client_id === this.selectedClient
+        );
       }
 
       if (this.selectedDate) {
         const selectedDate = new Date(this.selectedDate);
-        filtered = filtered.filter(item => {
+        filtered = filtered.filter((item) => {
           const projectDate = new Date(item.created_at);
           return projectDate.toDateString() === selectedDate.toDateString();
         });
@@ -90,32 +133,70 @@ export default {
   methods: {
     async fetchProjects() {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/projects');
-        this.projects = response.data.map(project => ({
+        const response = await axios.get("http://127.0.0.1:8000/api/projects");
+        this.projects = response.data.map((project) => ({
           id: project.id,
           name: project.name,
           client_id: project.client_id,
-          client_name: project.client ? project.client.name : 'Brak klienta',
-          estimation: project.estimation,
+          client_name: project.client ? project.client.name : "Brak klienta",
+          total_estimation: this.calculateTotalEstimation(project.id),
           formatted_created_at: this.formatDate(project.created_at),
           created_at: project.created_at,
         }));
       } catch (error) {
-        console.error('Error fetching projects:', error);
+        console.error("Error fetching projects:", error);
       }
     },
 
+    async fetchEstimations() {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/estimations"
+        );
+        this.estimations = response.data;
+        this.updateProjectEstimations();
+      } catch (error) {
+        console.error("Error fetching estimations:", error);
+      }
+    },
+
+    updateProjectEstimations() {
+      this.projects = this.projects.map((project) => ({
+        ...project,
+        total_estimation: this.calculateTotalEstimation(project.id),
+      }));
+    },
+
+    calculateTotalEstimation(projectId) {
+      const projectEstimations = this.estimations.filter(
+        (estimation) => estimation.project_id === projectId
+      );
+      return projectEstimations.reduce(
+        (sum, estimation) => sum + (parseFloat(estimation.amount) || 0),
+        0
+      );
+    },
+
     formatDate(date) {
-      const options = { day: 'numeric', month: 'short', year: 'numeric' };
-      return new Date(date).toLocaleDateString('pl-PL', options);
+      const options = { day: "numeric", month: "short", year: "numeric" };
+      return new Date(date).toLocaleDateString("pl-PL", options);
     },
 
     async fetchClients() {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/clients');
-        this.clients = response.data;
+        const clientsWithProjects = this.projects.map(project => ({
+          id: project.client_id,
+          name: project.client_name,
+        }));
+
+  
+        const uniqueClients = clientsWithProjects.filter((client, index, self) =>
+          index === self.findIndex((c) => c.id === client.id)
+        );
+
+        this.clients = uniqueClients;
       } catch (error) {
-        console.error('Error fetching clients:', error);
+        console.error("Error fetching clients:", error);
       }
     },
 
@@ -124,30 +205,31 @@ export default {
         await axios.delete(`http://127.0.0.1:8000/api/projects/${item.id}`);
         this.fetchProjects();
       } catch (error) {
-        console.error('Error deleting project:', error);
+        console.error("Error deleting project:", error);
       }
     },
 
     returnToHomePage() {
-      this.$router.push('/returnToHomePage');
+      this.$router.push("/returnToHomePage");
     },
 
     addProject() {
-      this.$router.push('/addProject');
+      this.$router.push("/addProject");
     },
 
     editProject(project) {
-      this.$router.push({ path: '/addProject', query: { id: project.id } });
+      this.$router.push({ path: "/addProject", query: { id: project.id } });
     },
 
     deleteProject1(project) {
-      console.log('Usuń projekt:', project);
+      console.log("Usuń projekt:", project);
     },
   },
 
-  created() {
-    this.fetchProjects();
-    this.fetchClients();
+  async created() {
+    await this.fetchProjects();
+    await this.fetchEstimations();
+    await this.fetchClients();
   },
 };
 </script>

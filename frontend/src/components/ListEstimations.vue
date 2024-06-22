@@ -33,6 +33,7 @@ export default {
         { text: 'Projekt', value: 'project.name' }, 
         { text: 'Klient', value: 'client.name' },
         { text: 'Wycena', value: 'type' },
+        { text: 'Kwota', value: 'amount' },
         { text: 'Data dodania', value: 'created_at' },
         { text: 'Akcje', value: 'actions', sortable: false },
       ],
@@ -50,6 +51,7 @@ export default {
           id: estimation.id,
           name: estimation.name,
           type: estimation.type,
+          amount: estimation.amount,
           created_at: this.formatDate(estimation.created_at),
           project: estimation.project, 
           client: estimation.project.client, 
@@ -82,6 +84,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 @import '~@mdi/font/css/materialdesignicons.css';
