@@ -169,7 +169,7 @@ export default {
 }
 
 .operation-buttons {
-  justify-self: left;
+  justify-content: center;
   margin-right: 10px;
 }
 

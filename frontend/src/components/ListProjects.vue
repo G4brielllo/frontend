@@ -242,4 +242,6 @@ export default {
   padding: 16px;
   margin: 20px;
 }
+
+
 </style>
