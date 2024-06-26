@@ -28,13 +28,29 @@
                   ></v-select>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-text-field
-                    v-model="estimation.date"
-                    label="Data"
-                    prepend-icon="mdi-calendar"
-                    dense
-                    required
-                  ></v-text-field>
+                  <v-menu
+                    v-model="menu"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                    offset-y
+                    full-width
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="estimation.date"
+                        label="Data"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                        clearable
+                        hide-details
+                        class="compact-date-field"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker v-model="estimation.date" no-title @input="menu = false"></v-date-picker>
+                  </v-menu>
                 </v-col>
                 <v-col cols="12">
                   <v-radio-group v-model="estimation.type" label="Rodzaj wyceny" dense>
@@ -74,7 +90,8 @@ export default {
       },
       projects: [],
       valid: true,
-      isNewEstimation: true, 
+      isNewEstimation: true,
+      menu: false 
     };
   },
   created() {
@@ -146,7 +163,7 @@ export default {
     formatDate(date) {
       const options = { day: 'numeric', month: 'long', year: 'numeric' };
       return new Date(date).toLocaleDateString('pl-PL', options);
-    },
+    }
   },
 };
 </script>
@@ -196,5 +213,10 @@ export default {
 
 .v-toolbar-title {
   font-size: 20px;
+}
+
+.v-date-picker {
+  width: auto !important;
+  max-width: 290px !important;
 }
 </style>
