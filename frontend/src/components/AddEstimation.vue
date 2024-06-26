@@ -49,7 +49,7 @@
                         class="compact-date-field"
                       ></v-text-field>
                     </template>
-                    <v-date-picker v-model="estimation.date" no-title @input="menu = false"></v-date-picker>
+                    <v-date-picker v-model="estimation.date" no-title @input="onDatePickerInput"></v-date-picker>
                   </v-menu>
                 </v-col>
                 <v-col cols="12">
@@ -119,7 +119,7 @@ export default {
         this.estimation.name = estimationData.name;
         this.estimation.description = estimationData.description;
         this.estimation.project_id = estimationData.project_id;
-        this.estimation.date = this.formatDate(estimationData.date);
+        this.estimation.date = estimationData.date;
         this.estimation.type = estimationData.type;
         this.estimation.amount = estimationData.amount;
       } catch (error) {
@@ -160,10 +160,10 @@ export default {
       this.estimation.type = 'hourly';
       this.estimation.amount = '';
     },
-    formatDate(date) {
-      const options = { day: 'numeric', month: 'long', year: 'numeric' };
-      return new Date(date).toLocaleDateString('pl-PL', options);
-    }
+    onDatePickerInput(date) {
+      this.estimation.date = date;
+      this.menu = false;
+    },
   },
 };
 </script>

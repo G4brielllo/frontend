@@ -26,9 +26,7 @@
           </template>
         </v-data-table>
       </v-card-text>
-
       <v-row class="operation-buttons">
-       
         <v-col cols="auto">
           <v-menu open-on-hover>
             <template v-slot:activator="{ on, attrs }">
@@ -69,7 +67,7 @@ export default {
         { text: "Klient", value: "client.name" },
         { text: "Wycena", value: "type" },
         { text: "Kwota", value: "amount" },
-        { text: "Data dodania", value: "created_at" },
+        { text: "Data wykonania", value: "date" },
         { text: "Akcje", value: "actions", sortable: false },
       ],
       estimations: [],
@@ -81,15 +79,13 @@ export default {
   methods: {
     async fetchEstimations() {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/estimations"
-        );
+        const response = await axios.get("http://127.0.0.1:8000/api/estimations");
         this.estimations = response.data.map((estimation) => ({
           id: estimation.id,
           name: estimation.name,
           type: estimation.type,
           amount: estimation.amount,
-          created_at: this.formatDate(estimation.created_at),
+          date: this.formatDate(estimation.date),
           project: estimation.project,
           client: estimation.project.client,
         }));
@@ -107,7 +103,6 @@ export default {
         console.error("Error deleting estimation:", error);
       }
     },
-    
     returnToHomePage() {
       this.$router.push("/");
     },
