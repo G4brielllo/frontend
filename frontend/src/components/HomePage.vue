@@ -3,7 +3,11 @@
     <v-container fluid>
       <v-row no-gutters>
         <v-col cols="auto">
-          <v-navigation-drawer app expand-on-hover rail permanent
+          <v-navigation-drawer
+            app
+            expand-on-hover
+            rail
+            permanent
             @mouseover="toggleHover(true)"
             @mouseleave="toggleHover(false)"
           >
@@ -11,7 +15,10 @@
               <v-col cols="auto" class="text-center position-relative">
                 <v-img
                   :src="woman"
-                  :class="{ 'image-woman': !isHovered, 'image-woman-large': isHovered }"
+                  :class="{
+                    'image-woman': !isHovered,
+                    'image-woman-large': isHovered,
+                  }"
                 ></v-img>
               </v-col>
             </v-row>
@@ -19,8 +26,12 @@
               <v-list dense nav>
                 <v-list-item>
                   <v-list-item-content>
-                    <v-list-item-title class="subtitle-1">User</v-list-item-title>
-                    <v-list-item-subtitle>sandra_a88@gmail.com</v-list-item-subtitle>
+                    <v-list-item-title class="subtitle-1"
+                      >User</v-list-item-title
+                    >
+                    <v-list-item-subtitle
+                      >sandra_a88@gmail.com</v-list-item-subtitle
+                    >
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -132,7 +143,7 @@
 import user from "@/assets/user.png";
 import project from "@/assets/project.png";
 import estimation from "@/assets/budgeting.png";
-import woman from "@/assets/woman.png"; 
+import woman from "@/assets/woman.png";
 
 export default {
   name: "HomePageComponent",
@@ -142,7 +153,7 @@ export default {
       project: project,
       estimation: estimation,
       woman: woman,
-      isHovered: false, 
+      isHovered: false,
     };
   },
   methods: {
@@ -203,33 +214,33 @@ export default {
 }
 
 .image-woman {
-  width: 50px; 
-  height: 50px; 
-  border-radius: 50%; 
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
   transition: all 0.3s ease;
   overflow: hidden;
 }
 
 .image-woman-large {
-  width: 100px; 
-  height: 100px; 
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  transition: all 0.3s ease; 
-  overflow: hidden; 
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
 
 .subtitle-1 {
   font-size: 14px;
-  font-weight: bold; 
+  font-weight: bold;
 }
 
 .position-relative {
-  position: relative; 
+  position: relative;
 }
 
 .user-info {
   position: absolute;
-  bottom: -40px; 
+  bottom: -40px;
   left: 50%;
   transform: translateX(-50%);
   background-color: white;

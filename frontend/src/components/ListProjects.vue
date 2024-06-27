@@ -1,5 +1,83 @@
 <template>
   <v-app>
+    <v-navigation-drawer
+            app
+            expand-on-hover
+            rail
+            permanent
+            @mouseover="toggleHover(true)"
+            @mouseleave="toggleHover(false)"
+          >
+            <v-row align="center" justify="center">
+              <v-col cols="auto" class="text-center position-relative">
+                <v-img
+                  :src="woman"
+                  :class="{
+                    'image-woman': !isHovered,
+                    'image-woman-large': isHovered,
+                  }"
+                ></v-img>
+              </v-col>
+            </v-row>
+            <div v-if="isHovered" class="user-info">
+              <v-list dense nav>
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-list-item-title class="subtitle-1"
+                      >User</v-list-item-title
+                    >
+                    <v-list-item-subtitle
+                      >sandra_a88@gmail.com</v-list-item-subtitle
+                    >
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </div>
+            <v-divider></v-divider>
+            <v-list dense nav>
+              <v-list-item @click="returnToHomePage">
+                <v-list-item-icon>
+                  <v-icon size="x-large">mdi-home</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Home Page</v-list-item-title>
+              </v-list-item>
+
+              <v-list-item @click="goToListClients()">
+                <v-list-item-icon>
+                  <v-icon size="x-large">mdi-account</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Clients</v-list-item-title>
+              </v-list-item>
+
+              <v-list-item @click="goToListProjects()">
+                <v-list-item-icon>
+                  <v-icon size="x-large">mdi-folder</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Projects</v-list-item-title>
+              </v-list-item>
+
+              <v-list-item @click="goToListEstimations()">
+                <v-list-item-icon>
+                  <v-icon size="x-large">mdi-note</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Estimations</v-list-item-title>
+              </v-list-item>
+
+              <v-list-item @click="goToPage('starred')">
+                <v-list-item-icon>
+                  <v-icon size="x-large">mdi-star</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Starred</v-list-item-title>
+              </v-list-item>
+
+              <v-list-item @click="goToLogin()">
+                <v-list-item-icon>
+                  <v-icon size="x-large">mdi-login</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Zaloguj/Zarejestruj się</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-navigation-drawer>
     <v-container>
       <v-card class="compact-card">
         <v-toolbar color="black" dark>
@@ -131,6 +209,22 @@ export default {
     },
   },
   methods: {
+    goToHomePage(){
+      this.$root.push('/returnToHomePage');
+    },
+    
+    goToListClients() {
+      this.$router.push('/listClients');
+    },
+
+
+    goToListEstimations() {
+      this.$router.push('/listEstimations');
+    },
+
+    goToLogin() {
+      this.$router.push('/login');
+    },
     async fetchProjects() {
       try {
         const response = await axios.get("http://127.0.0.1:8000/api/projects");
