@@ -73,7 +73,7 @@
                 <v-list-item-title>Starred</v-list-item-title>
               </v-list-item>
 
-              <v-list-item @click="goToLogin()">
+              <v-list-item @click="goToRegister()">
                 <v-list-item-icon>
                   <v-icon size="x-large">mdi-login</v-icon>
                 </v-list-item-icon>
@@ -171,6 +171,9 @@ export default {
     },
     goToLogin() {
       this.$router.push("/login");
+    },
+    goToRegister() {
+      this.$router.push("/register");
     },
     toggleHover(value) {
       this.isHovered = value;
