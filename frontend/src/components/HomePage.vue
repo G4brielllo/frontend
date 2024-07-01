@@ -38,7 +38,7 @@
             </div>
             <v-divider></v-divider>
             <v-list dense nav>
-              <v-list-item @click="goToPage('home')">
+              <v-list-item>
                 <v-list-item-icon>
                   <v-icon size="x-large">mdi-home</v-icon>
                 </v-list-item-icon>
@@ -64,13 +64,6 @@
                   <v-icon size="x-large">mdi-note</v-icon>
                 </v-list-item-icon>
                 <v-list-item-title>Estimations</v-list-item-title>
-              </v-list-item>
-
-              <v-list-item @click="goToPage('starred')">
-                <v-list-item-icon>
-                  <v-icon size="x-large">mdi-star</v-icon>
-                </v-list-item-icon>
-                <v-list-item-title>Starred</v-list-item-title>
               </v-list-item>
 
               <v-list-item @click="goToRegister()">
@@ -157,9 +150,7 @@ export default {
     };
   },
   methods: {
-    goToPage(page) {
-      this.$router.push({ name: page });
-    },
+    
     goToListClients() {
       this.$router.push("/listClients");
     },
