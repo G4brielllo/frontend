@@ -26,6 +26,8 @@
         <v-card-actions class="login-actions">
           <v-btn color="gray" @click="login">Zaloguj</v-btn>
           <v-btn color="gray" @click="cancelLogin">Anuluj</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="gray" @click="register">Zarejestruj się</v-btn>
         </v-card-actions>
       </v-card>
     </v-container>
@@ -73,7 +75,10 @@ export default {
     },
     cancelLogin() {
       this.clearForm();
-      this.$router.push("/register");
+      this.$router.push("/");
+    },
+    register(){
+      this.$router.push("/register")
     },
     clearForm() {
       this.client.email = "";
@@ -93,7 +98,7 @@ export default {
 
 .login-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: left;
   padding: 8px;
 }
 

@@ -66,7 +66,7 @@
                 <v-list-item-title>Estimations</v-list-item-title>
               </v-list-item>
 
-              <v-list-item @click="goToRegister()">
+              <v-list-item @click="goToLogin()">
                 <v-list-item-icon>
                   <v-icon size="x-large">mdi-login</v-icon>
                 </v-list-item-icon>
