@@ -1,6 +1,10 @@
 <template>
   <v-app>
     <v-container>
+      <v-alert v-if="showErrorAlert" type="error" dismissible>
+        Błąd podczas logowania. Sprawdź poprawność danych
+      </v-alert>
+
       <v-card class="login-card">
         <v-toolbar color="black" dark>
           <v-toolbar-title>{{ "Logowanie" }}</v-toolbar-title>
@@ -45,6 +49,7 @@ export default {
         password: "",
       },
       valid: true,
+      showErrorAlert: false,
     };
   },
   methods: {
@@ -62,23 +67,28 @@ export default {
 
           if (response.status === 200) {
             console.log("Login successful:", response.data);
+            localStorage.setItem("jwt_token", response.data.token);
+            console.log("Token saved:", localStorage.getItem("jwt_token"));
             this.clearForm();
-           
+            this.showErrorAlert = false; 
             this.$router.push("/");
           } else {
             console.error("Login failed:", response.data);
+            this.showErrorAlert = true; 
           }
         } catch (error) {
           console.error("Login error:", error);
+          this.showErrorAlert = true; 
         }
       }
     },
+
     cancelLogin() {
       this.clearForm();
       this.$router.push("/");
     },
-    register(){
-      this.$router.push("/register")
+    register() {
+      this.$router.push("/register");
     },
     clearForm() {
       this.client.email = "";
@@ -90,7 +100,7 @@ export default {
 
 <style scoped>
 .login-card {
-  max-width: 400px; 
+  max-width: 400px;
   border-radius: 12px;
   margin: auto;
   padding: 16px;
@@ -109,5 +119,11 @@ export default {
 
 .v-toolbar-title {
   font-size: 20px;
+}
+
+.v-alert{
+  max-width: fit-content;
+  margin: auto;
+  text-align: center;
 }
 </style>

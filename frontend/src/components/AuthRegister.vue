@@ -1,6 +1,9 @@
 <template>
   <v-app>
     <v-container>
+      <v-alert v-if="showErrorAlert" type="error" dismissible>
+        Hasła nie są identyczne. Sprawdź je i spróbuj ponownie.
+      </v-alert>
       <v-card class="register-card">
         <v-toolbar color="black" dark>
           <v-toolbar-title>{{ "Rejestracja" }}</v-toolbar-title>
@@ -9,40 +12,48 @@
         <v-card-text>
           <v-form ref="form" v-model="valid" class="compact-form">
             <v-container>
-              <v-row>
-                <v-col cols="12" sm="6">
-                  <v-text-field
-                    v-model="client.email"
-                    label="Email"
-                    dense
-                    required
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="6">
-                  <v-text-field
-                    v-model="client.name"
-                    label="Nazwa"
-                    dense
-                    required
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="6">
-                  <v-text-field
-                    v-model="client.password"
-                    label="Hasło"
-                    dense
-                    required
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="6">
-                  <v-text-field
-                    v-model="client.logo"
-                    label="Logo"
-                    dense
-                    required
-                  ></v-text-field>
-                </v-col>
-              </v-row>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="user.name"
+                  label="Nazwa"
+                  dense
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="user.email"
+                  label="Email"
+                  dense
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="user.password"
+                  label="Hasło"
+                  dense
+                  required
+                  type="password"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="user.confirmPassword"
+                  label="Potwierdź Hasło"
+                  dense
+                  required
+                  type="password"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="user.logo"
+                  label="Logo"
+                  dense
+                  required
+                ></v-text-field>
+              </v-col>
             </v-container>
           </v-form>
         </v-card-text>
@@ -63,30 +74,37 @@ import axios from "@/axios";
 export default {
   data() {
     return {
-      client: {
+      user: {
         id: null,
         name: "",
         email: "",
         password: "",
+        confirmPassword: "",
         logo: "",
       },
       valid: true,
       image: null,
       base64: null,
+      showErrorAlert: false,
     };
   },
   methods: {
     async saveUser() {
       if (this.$refs.form.validate()) {
+        if (!this.validatePasswords()) {
+          this.showErrorAlert = true;
+          return;
+        }
+
         try {
           const formData = new FormData();
-          formData.append("name", this.client.name);
-          formData.append("email", this.client.email);
-          formData.append("password", this.client.password);
-          formData.append("logo", this.client.logo);
+          formData.append("name", this.user.name);
+          formData.append("email", this.user.email);
+          formData.append("password", this.user.password);
+          formData.append("logo", this.user.logo);
 
           const response = await axios.post(
-            "http://127.0.0.1:8000/api/users",
+            "http://127.0.0.1:8000/api/register",
             formData
           );
 
@@ -102,6 +120,9 @@ export default {
         }
       }
     },
+    validatePasswords() {
+      return this.user.password === this.user.confirmPassword;
+    },
     cancelUserAdding() {
       this.clearForm();
       this.$router.push("/");
@@ -110,13 +131,15 @@ export default {
       this.$router.push("/login");
     },
     clearForm() {
-      this.client.id = null;
-      this.client.name = "";
-      this.client.email = "";
-      this.client.password = "";
-      this.client.logo = "";
+      this.user.id = null;
+      this.user.name = "";
+      this.user.email = "";
+      this.user.password = "";
+      this.user.confirmPassword = "";
+      this.user.logo = "";
       this.base64 = null;
       this.image = null;
+      this.showErrorAlert = false;
     },
   },
 };
@@ -171,5 +194,11 @@ export default {
 
 .v-toolbar-title {
   font-size: 20px;
+}
+
+.v-alert {
+  max-width: fit-content;
+  margin: auto;
+  text-align: center;
 }
 </style>
