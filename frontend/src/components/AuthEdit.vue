@@ -1,0 +1,262 @@
+<template>
+  <v-app>
+    <v-container>
+      <v-card class="elevation-4 compact-card">
+        <v-toolbar color="black" dark>
+          <v-toolbar-title>Edytuj dane użytkownika</v-toolbar-title>
+          <v-spacer></v-spacer>
+        </v-toolbar>
+        <v-card-text>
+          <v-form ref="form" v-model="valid" class="compact-form">
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="user.name"
+                    label="Nazwa"
+                    dense
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="user.email"
+                    label="Email"
+                    dense
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="user.password"
+                    label="Nowe hasło"
+                    dense
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="user.confirmPassword"
+                    label="Potwierdź hasło"
+                    dense
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-file-input
+                    v-model="image"
+                    label="Zmień zdjęcie profilowe"
+                    accept="image/*"
+                    @change="createBase64Image"
+                    dense
+                  ></v-file-input>
+                  <div v-if="user.logo">
+                    <img
+                      :src="user.logo"
+                      alt="User Logo"
+                      style="max-width: 100px; max-height: 100px"
+                    />
+                  </div>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-form>
+        </v-card-text>
+        <v-card-actions class="compact-actions">
+          <v-btn color="gray" @click="saveUser" :disabled="!valid"
+            >Zapisz zmiany</v-btn
+          >
+          <v-btn color="gray" @click="cancelEdit">Anuluj</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-container>
+  </v-app>
+</template>
+
+<script>
+import axios from "@/axios";
+
+export default {
+  data() {
+    return {
+      user: {
+        id: null,
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        logo: "",
+      },
+      valid: true,
+      image: null,
+      base64: null,
+    };
+  },
+  created() {
+    // Pobierz dane użytkownika z localStorage
+    const userInformation = localStorage.getItem("user_information");
+    if (userInformation) {
+      const userData = JSON.parse(userInformation);
+      this.user.id = userData.id;
+      this.user.name = userData.name;
+      this.user.email = userData.email;
+      this.user.logo = userData.logo; // Jeśli potrzebne
+      console.log("Loaded user data from localStorage:", userData);
+
+      // Pobierz szczegółowe dane użytkownika z API na podstawie ID
+      if (this.user.id) {
+        this.fetchUser(this.user.id);
+      }
+    } else {
+      console.error("Nie znaleziono danych użytkownika w localStorage.");
+    }
+  },
+
+  methods: {
+    async fetchUser(userId) {
+      try {
+        const token = localStorage.getItem("jwt_token");
+        if (!token) {
+          console.error("No token found. User is not logged in.");
+          return;
+        }
+
+        const response = await axios.get(`http://127.0.0.1:8000/api/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          console.log("Fetched user data:", response.data);
+          this.user.name = response.data.name;
+          this.user.email = response.data.email;
+          // Możesz zaktualizować inne pola użytkownika, jeśli są dostępne
+
+          // Jeśli użytkownik ma zdjęcie profilowe, pobierz URL i wyświetl
+          if (response.data.logo) {
+            this.fetchImageUrl(response.data.logo);
+          }
+        } else {
+          console.error("Failed to fetch user data:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    },
+
+    async fetchImageUrl(url) {
+      try {
+        const response = await axios.get(url, { responseType: "blob" });
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          this.base64 = event.target.result;
+          this.user.logo = this.base64;
+        };
+        reader.readAsDataURL(response.data);
+      } catch (error) {
+        console.error("Error fetching image URL:", error);
+      }
+    },
+
+    async saveUser() {
+      console.log("Saving user with ID:", this.user.id);
+
+      if (this.$refs.form.validate()) {
+        try {
+          const formData = new FormData();
+          formData.append("name", this.user.name);
+          formData.append("email", this.user.email);
+          if (this.user.password) {
+            formData.append("password", this.user.password);
+          }
+          if (this.image) {
+            formData.append("logo", this.base64);
+          }
+
+          console.log("Saving user data:", formData);
+
+          const response = await axios.put(
+            `http://127.0.0.1:8000/api/users/${this.user.id}`,
+            formData
+          );
+
+          if (response.status === 200 || response.status === 201) {
+            console.log("User updated successfully:", response.data);
+
+            localStorage.setItem(
+              "user_information",
+              JSON.stringify({
+                id: this.user.id,
+                name: this.user.name,
+                email: this.user.email,
+                logo: this.user.logo,
+              })
+            );
+
+            this.clearForm();
+            this.$router.push("/");
+          } else {
+            console.error("Error updating user:", response.data);
+          }
+        } catch (error) {
+          console.error("Error updating user:", error);
+        }
+      } else {
+        console.error("Form validation failed.");
+      }
+    },
+
+    cancelEdit() {
+      this.clearForm();
+      this.$router.push("/");
+    },
+
+    clearForm() {
+      this.user.id = null;
+      this.user.name = "";
+      this.user.email = "";
+      this.user.password = "";
+      this.user.confirmPassword = "";
+      this.user.logo = "";
+      this.base64 = null;
+      this.image = null;
+    },
+
+    createBase64Image(file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        this.base64 = event.target.result;
+        this.user.logo = this.base64;
+      };
+      reader.readAsDataURL(file);
+    },
+
+    isImageUrl(url) {
+      return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
+    },
+  },
+};
+</script>
+
+<style scoped>
+.compact-card {
+  max-width: 80%;
+  border-radius: 12px;
+  margin: auto;
+  padding: 16px;
+}
+
+.compact-form {
+  padding: 0;
+}
+
+.compact-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+}
+
+.v-btn {
+  min-width: 80px;
+  padding: 4px 8px;
+}
+</style>

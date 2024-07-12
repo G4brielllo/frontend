@@ -12,48 +12,54 @@
         <v-card-text>
           <v-form ref="form" v-model="valid" class="compact-form">
             <v-container>
-              <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="user.name"
-                  label="Nazwa"
-                  dense
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="user.email"
-                  label="Email"
-                  dense
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="user.password"
-                  label="Hasło"
-                  dense
-                  required
-                  type="password"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="user.confirmPassword"
-                  label="Potwierdź Hasło"
-                  dense
-                  required
-                  type="password"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="user.logo"
-                  label="Logo"
-                  dense
-                  required
-                ></v-text-field>
-              </v-col>
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="user.name"
+                    label="Nazwa"
+                    dense
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="user.email"
+                    label="Email"
+                    dense
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="user.password"
+                    label="Hasło"
+                    dense
+                    required
+                    type="password"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="user.confirmPassword"
+                    label="Potwierdź Hasło"
+                    dense
+                    required
+                    type="password"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-file-input 
+                    v-model="image" 
+                    label="Logo" 
+                    accept="image/*" 
+                    @change="createBase64Image" 
+                    dense
+                  ></v-file-input>
+                  <div v-if="user.logo">
+                    <img :src="user.logo" alt="User Logo" style="max-width: 100px; max-height: 100px;" />
+                  </div>
+                </v-col>
+              </v-row>
             </v-container>
           </v-form>
         </v-card-text>
@@ -103,6 +109,11 @@ export default {
           formData.append("password", this.user.password);
           formData.append("logo", this.user.logo);
 
+          console.log("FormData content:");
+          for (const pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+          }
+
           const response = await axios.post(
             "http://127.0.0.1:8000/api/register",
             formData
@@ -121,7 +132,15 @@ export default {
       }
     },
     validatePasswords() {
-      return this.user.password === this.user.confirmPassword;
+      if (this.user.password !== this.user.confirmPassword) {
+        this.showErrorAlert = true;
+        setTimeout(() => {
+          this.showErrorAlert = false;
+        }, 3000);
+        return false;
+      }
+      this.showErrorAlert = false;
+      return true;
     },
     cancelUserAdding() {
       this.clearForm();
@@ -140,6 +159,14 @@ export default {
       this.base64 = null;
       this.image = null;
       this.showErrorAlert = false;
+    },
+    createBase64Image(file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        this.base64 = event.target.result;
+        this.user.logo = this.base64;
+      };
+      reader.readAsDataURL(file);
     },
   },
 };
