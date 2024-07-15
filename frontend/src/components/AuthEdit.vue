@@ -1,6 +1,9 @@
 <template>
   <v-app>
     <v-container>
+      <v-alert v-if="showErrorAlert" type="error" dismissible>
+        Hasła nie są identyczne. Sprawdź je i spróbuj ponownie.
+      </v-alert>
       <v-card class="elevation-4 compact-card">
         <v-toolbar color="black" dark>
           <v-toolbar-title>Edytuj dane użytkownika</v-toolbar-title>
@@ -31,6 +34,8 @@
                     v-model="user.password"
                     label="Nowe hasło"
                     dense
+                    :rules="[v => !!v || !user.confirmPassword || 'Wprowadź hasło']"
+                    type="password"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
@@ -38,6 +43,8 @@
                     v-model="user.confirmPassword"
                     label="Potwierdź hasło"
                     dense
+                    :rules="[v => user.password === '' || !!v || 'Potwierdź hasło']"
+                    type="password"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
@@ -88,20 +95,21 @@ export default {
       valid: true,
       image: null,
       base64: null,
+      showErrorAlert: false,
     };
   },
   created() {
-    // Pobierz dane użytkownika z localStorage
+
     const userInformation = localStorage.getItem("user_information");
     if (userInformation) {
       const userData = JSON.parse(userInformation);
       this.user.id = userData.id;
       this.user.name = userData.name;
       this.user.email = userData.email;
-      this.user.logo = userData.logo; // Jeśli potrzebne
+      this.user.logo = userData.logo; 
       console.log("Loaded user data from localStorage:", userData);
 
-      // Pobierz szczegółowe dane użytkownika z API na podstawie ID
+     
       if (this.user.id) {
         this.fetchUser(this.user.id);
       }
@@ -119,19 +127,20 @@ export default {
           return;
         }
 
-        const response = await axios.get(`http://127.0.0.1:8000/api/users/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/users/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (response.status === 200) {
           console.log("Fetched user data:", response.data);
           this.user.name = response.data.name;
           this.user.email = response.data.email;
-          // Możesz zaktualizować inne pola użytkownika, jeśli są dostępne
-
-          // Jeśli użytkownik ma zdjęcie profilowe, pobierz URL i wyświetl
+          
           if (response.data.logo) {
             this.fetchImageUrl(response.data.logo);
           }
@@ -159,13 +168,20 @@ export default {
 
     async saveUser() {
       console.log("Saving user with ID:", this.user.id);
-
+      
+        if (!this.validatePasswords()) {
+          this.showErrorAlert = true;
+          return;
+        }
+      
       if (this.$refs.form.validate()) {
         try {
           const formData = new FormData();
           formData.append("name", this.user.name);
           formData.append("email", this.user.email);
           if (this.user.password) {
+            formData.append("password", this.user.password);
+          }else{
             formData.append("password", this.user.password);
           }
           if (this.image) {
@@ -204,7 +220,17 @@ export default {
         console.error("Form validation failed.");
       }
     },
-
+    validatePasswords() {
+      if (this.user.password !== this.user.confirmPassword) {
+        this.showErrorAlert = true;
+        setTimeout(() => {
+          this.showErrorAlert = false;
+        }, 3000);
+        return false;
+      }
+      this.showErrorAlert = false;
+      return true;
+    },
     cancelEdit() {
       this.clearForm();
       this.$router.push("/");
@@ -219,6 +245,7 @@ export default {
       this.user.logo = "";
       this.base64 = null;
       this.image = null;
+      this.showErrorAlert = false;
     },
 
     createBase64Image(file) {

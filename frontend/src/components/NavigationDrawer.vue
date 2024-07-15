@@ -73,7 +73,7 @@
         <v-list-item-title @click="goToListEstimations()">Estimations</v-list-item-title>
       </v-list-item>
 
-      <!-- User List (admin only) -->
+      <!-- User List -->
       <v-list-item
         v-if="isLoggedIn() && isAdmin"
         :disabled="isCurrentRoute('/listUsers')"
@@ -85,6 +85,20 @@
           <v-icon size="x-large">mdi-account</v-icon>
         </v-list-item-icon>
         <v-list-item-title @click="goToListUsers()">Users List</v-list-item-title>
+      </v-list-item>
+
+      <!-- Edit Item -->
+      <v-list-item
+        v-if="isLoggedIn()"
+        @click="editItem()"
+        @mouseover="toggleListItemHover(true, 'edit')"
+        @mouseleave="toggleListItemHover(false, 'edit')"
+        :class="{ 'list-item-hover': listItemHovered === 'edit' }"
+      >
+        <v-list-item-icon>
+          <v-icon size="x-large">mdi-pencil</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>Edit My Data</v-list-item-title>
       </v-list-item>
 
       <!-- Logout -->
@@ -101,20 +115,6 @@
         <v-list-item-title>Logout</v-list-item-title>
       </v-list-item>
 
-      <!-- Edit Item -->
-      <v-list-item
-        v-if="isLoggedIn()"
-        @click="editItem()"
-        @mouseover="toggleListItemHover(true, 'edit')"
-        @mouseleave="toggleListItemHover(false, 'edit')"
-        :class="{ 'list-item-hover': listItemHovered === 'edit' }"
-      >
-        <v-list-item-icon>
-          <v-icon size="x-large">mdi-pencil</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>Edit Item</v-list-item-title>
-      </v-list-item>
-
       <!-- Login/Register -->
       <v-list-item
         v-else
@@ -129,7 +129,7 @@
         <v-list-item-title>Login/Register</v-list-item-title>
       </v-list-item>
 
-      <!-- User ID -->
+
       <v-list-item v-if="userId">
         <v-list-item-icon>
           <v-icon size="x-large">mdi-account</v-icon>
@@ -168,7 +168,6 @@ export default {
           const userDataObject = JSON.parse(user_information);
           this.userRole = userDataObject.role;
 
-          // Set isAdmin based on userRole
           this.isAdmin = this.userRole === "admin";
         } else {
           console.error("User information not found in localStorage.");
