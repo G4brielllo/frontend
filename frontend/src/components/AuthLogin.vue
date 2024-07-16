@@ -110,7 +110,7 @@ export default {
       this.$router.push("/");
     },
     forgotPassword() {
-      this.$router.push("/resetPassword");
+      this.$router.push("/confirmEmail");
     },
     register() {
       this.$router.push("/register");

@@ -13,6 +13,7 @@ import AuthRegister from '@/components/AuthRegister.vue';
 import AuthEdit from '@/components/AuthEdit.vue';
 import ListUsers from '@/components/ListUsers.vue';
 import AuthResetPassword from '@/components/AuthResetPassword.vue';
+import AuthEmailToResetPassword from '@/components/AuthEmailToResetPassword.vue';
 
 
 
@@ -45,6 +46,7 @@ export default new Router({
       { path: '/editUser', component: AuthEdit },
       { path: '/listUsers', component: ListUsers },
       { path: '/resetPassword', component: AuthResetPassword },
+      { path: '/confirmEmail', component: AuthEmailToResetPassword },
 
 
 
