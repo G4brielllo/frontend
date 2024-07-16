@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="app-container">
     <v-col cols="auto">
       <NavigationDrawer />
     </v-col>
@@ -276,6 +276,9 @@ export default {
   width: 82%;
   max-width: 1200px; 
 }
+body {
+    overflow: hidden;
+}
 
 .compact-search-field,
 .compact-date-field {
@@ -318,5 +321,8 @@ export default {
 .v-navigation-drawer:hover .image-woman {
   width: 100px;
   height: 100px;
+}
+.app-container {
+  max-height: 100px;
 }
 </style>

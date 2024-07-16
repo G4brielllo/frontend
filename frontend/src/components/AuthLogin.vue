@@ -29,9 +29,12 @@
         </v-card-text>
         <v-card-actions class="login-actions">
           <v-btn color="gray" @click="login">Zaloguj</v-btn>
-          <v-btn color="gray" @click="cancelLogin">Anuluj</v-btn>
-          <v-spacer></v-spacer>
+        </v-card-actions>
+        <v-card-actions class="login-actions">
           <v-btn color="gray" @click="register">Zarejestruj się</v-btn>
+        </v-card-actions>
+        <v-card-actions class="login-actions-forgot-password">
+          <v-btn color="gray" @click="forgotPassword">Zapomniałem hasła</v-btn>
         </v-card-actions>
       </v-card>
     </v-container>
@@ -64,26 +67,31 @@ export default {
             "http://127.0.0.1:8000/api/login",
             formData
           );
-          
+
           if (response.status === 200) {
             console.log("Login successful:", response.data);
-
 
             const userInformation = {
               id: response.data.id,
               name: response.data.name,
               email: response.data.user,
               token: response.data.token,
-              role: response.data.role, 
+              role: response.data.role,
             };
-            
+
             localStorage.setItem("jwt_token", response.data.token);
-           
-            localStorage.setItem("user_information", JSON.stringify(userInformation));
-          
+
+            localStorage.setItem(
+              "user_information",
+              JSON.stringify(userInformation)
+            );
+
             console.log("Token saved:", localStorage.getItem("jwt_token"));
-          
-            console.log("User information saved:", localStorage.getItem("user_information"));
+
+            console.log(
+              "User information saved:",
+              localStorage.getItem("user_information")
+            );
             this.clearForm();
             this.showErrorAlert = false;
             this.$router.push("/");
@@ -100,6 +108,9 @@ export default {
     cancelLogin() {
       this.clearForm();
       this.$router.push("/");
+    },
+    forgotPassword() {
+      this.$router.push("/resetPassword");
     },
     register() {
       this.$router.push("/register");
@@ -122,12 +133,17 @@ export default {
 
 .login-actions {
   display: flex;
-  justify-content: left;
+  justify-content: center;
   padding: 8px;
+}
+.login-actions-forgot-password{
+  display: flex;
+  justify-content: center;
+
 }
 
 .v-btn {
-  min-width: 80px;
+  min-width: 120px;
   padding: 4px 8px;
 }
 

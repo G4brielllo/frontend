@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="app-container">
     <v-col cols="auto">
       <NavigationDrawer />
     </v-col>
@@ -168,9 +168,9 @@ export default {
   border-radius: 12px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
   padding: 16px;
-  margin: 20px;
   width: 80%;
   max-width: 1200px;
+  margin-bottom: 30%;
 }
 
 .compact-search-field {
@@ -181,9 +181,9 @@ export default {
   margin-top: 20px;
 }
 
-.fill-height {
+/* .fill-height {
   height: 100vh;
-}
+} */
 
 .operation-buttons {
   margin-top: 10px;
@@ -214,5 +214,8 @@ export default {
 .v-navigation-drawer:hover .image-woman {
   width: 100px;
   height: 100px;
+}
+.app-container {
+  max-height: 100px;
 }
 </style>

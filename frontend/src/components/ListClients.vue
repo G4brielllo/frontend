@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="app-container">
     <v-col cols="auto">
       <NavigationDrawer />
     </v-col>
@@ -231,8 +231,9 @@ export default {
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
   width: 80%;
   max-width: 1200px;
-  margin: auto;
-  margin-top: 20px;
+  /* margin: auto; */
+  /* margin-top: 5%; */
+  margin-bottom: 30%;
 }
 
 .compact-search-field,
@@ -271,5 +272,8 @@ export default {
 .v-navigation-drawer:hover .image-woman {
   width: 100px;
   height: 100px;
+}
+.app-container {
+  max-height: 100px;
 }
 </style>
