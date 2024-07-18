@@ -5,7 +5,6 @@
         <v-col cols="auto">
           <NavigationDrawer />
         </v-col>
-        <v-col cols="auto"> </v-col>
         <v-col>
           <v-container>
             <v-row justify="center">
@@ -17,7 +16,6 @@
                   >
                     Home Page
                   </v-card-title>
-
                   <v-card-actions class="flex-container">
                     <v-col cols="12" sm="4" class="flex-column-center">
                       <v-btn
@@ -141,6 +139,7 @@ export default {
 </script>
 
 <style>
+
 .headline {
   justify-content: center;
 }

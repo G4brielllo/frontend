@@ -10,11 +10,11 @@ import AddClient from '@/components/AddClient.vue';
 import AddProject from '@/components/AddProject.vue';
 import AuthLogin from '@/components/AuthLogin.vue';
 import AuthRegister from '@/components/AuthRegister.vue';
-import AuthEdit from '@/components/AuthEdit.vue';
+import AuthEditForUser from '@/components/AuthEditForUser.vue';
 import ListUsers from '@/components/ListUsers.vue';
 import AuthResetPassword from '@/components/AuthResetPassword.vue';
 import AuthEmailToResetPassword from '@/components/AuthEmailToResetPassword.vue';
-
+import AuthEditForAdmin from '@/components/AuthEditForAdmin.vue';
 
 
 
@@ -43,11 +43,11 @@ export default new Router({
       { path: '/cancelClientAdding', component: ListClients },
       { path: '/login', component: AuthLogin },
       { path: '/register', component: AuthRegister },
-      { path: '/editUser', component: AuthEdit },
+      { path: '/editUser', component: AuthEditForUser },
       { path: '/listUsers', component: ListUsers },
       { path: '/resetPassword', component: AuthResetPassword },
       { path: '/confirmEmail', component: AuthEmailToResetPassword },
-
+      { path: '/editForAdmin', component: AuthEditForAdmin },
 
 
       

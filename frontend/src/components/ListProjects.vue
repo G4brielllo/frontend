@@ -3,7 +3,7 @@
     <v-col cols="auto">
       <NavigationDrawer />
     </v-col>
-    <v-container class="fill-height d-flex align-center justify-center">
+    <v-container class="fill-height justify-center">
       <v-card class="expanded-card">
         <v-toolbar color="black" dark>
           <v-toolbar-title>Lista Projektów</v-toolbar-title>
@@ -271,8 +271,9 @@ export default {
   border-radius: 12px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
   padding: 16px;
-  margin: auto; 
-  margin-top: 20px;
+  /* margin: auto;  */
+  /* margin-top: 10%; */
+  margin-bottom: 90%;
   width: 82%;
   max-width: 1200px; 
 }
@@ -322,7 +323,5 @@ body {
   width: 100px;
   height: 100px;
 }
-.app-container {
-  max-height: 100px;
-}
+
 </style>

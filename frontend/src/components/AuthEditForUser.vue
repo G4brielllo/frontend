@@ -68,7 +68,7 @@
           </v-form>
         </v-card-text>
         <v-card-actions class="compact-actions">
-          <v-btn color="gray" @click="saveUser" :disabled="!valid"
+          <v-btn color="gray" @click="saveUser"
             >Zapisz zmiany</v-btn
           >
           <v-btn color="gray" @click="cancelEdit">Anuluj</v-btn>

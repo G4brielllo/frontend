@@ -89,7 +89,7 @@
 
       <!-- Edit Item -->
       <v-list-item
-        v-if="isLoggedIn()"
+        v-if="isLoggedIn() && !isAdmin"
         @click="editItem()"
         @mouseover="toggleListItemHover(true, 'edit')"
         @mouseleave="toggleListItemHover(false, 'edit')"
