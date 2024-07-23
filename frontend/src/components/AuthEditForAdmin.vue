@@ -218,7 +218,7 @@ export default {
           const formData = new FormData();
           formData.append("name", this.user.name);
           formData.append("email", this.user.email);
-          formData.append("role", this.user.role); // Dodanie roli do formularza
+          formData.append("role", this.user.role); 
 
           if (this.user.password) {
             formData.append("password", this.user.password);

@@ -44,7 +44,9 @@
         <v-list-item-icon>
           <v-icon size="x-large">mdi-account</v-icon>
         </v-list-item-icon>
-        <v-list-item-title @click="goToListClients()">Clients</v-list-item-title>
+        <v-list-item-title @click="goToListClients()"
+          >Clients</v-list-item-title
+        >
       </v-list-item>
 
       <!-- Projects -->
@@ -57,7 +59,9 @@
         <v-list-item-icon>
           <v-icon size="x-large">mdi-folder</v-icon>
         </v-list-item-icon>
-        <v-list-item-title @click="goToListProjects()">Projects</v-list-item-title>
+        <v-list-item-title @click="goToListProjects()"
+          >Projects</v-list-item-title
+        >
       </v-list-item>
 
       <!-- Estimations -->
@@ -70,7 +74,9 @@
         <v-list-item-icon>
           <v-icon size="x-large">mdi-note</v-icon>
         </v-list-item-icon>
-        <v-list-item-title @click="goToListEstimations()">Estimations</v-list-item-title>
+        <v-list-item-title @click="goToListEstimations()"
+          >Estimations</v-list-item-title
+        >
       </v-list-item>
 
       <!-- User List -->
@@ -84,7 +90,9 @@
         <v-list-item-icon>
           <v-icon size="x-large">mdi-account</v-icon>
         </v-list-item-icon>
-        <v-list-item-title @click="goToListUsers()">Users List</v-list-item-title>
+        <v-list-item-title @click="goToListUsers()"
+          >Users List</v-list-item-title
+        >
       </v-list-item>
 
       <!-- Edit Item -->
@@ -129,7 +137,6 @@
         <v-list-item-title>Login/Register</v-list-item-title>
       </v-list-item>
 
-
       <v-list-item v-if="userId">
         <v-list-item-icon>
           <v-icon size="x-large">mdi-account</v-icon>
@@ -143,7 +150,15 @@
 <script>
 import woman from "@/assets/woman.png";
 import axios from "@/axios";
+import CryptoJS from "crypto-js";
 
+const encryptionKey = "V3ryS3cur3K3y#2024!";
+// const user_information = null;
+// function decryptData(ciphertext) {
+//   const bytes = CryptoJS.AES.decrypt(ciphertext, encryptionKey);
+//   const originalData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+//   return originalData;
+// }
 export default {
   name: "NavigationDrawer",
   data() {
@@ -162,8 +177,13 @@ export default {
   methods: {
     async fetchUserData() {
       try {
+        const encryptedData = localStorage.getItem(encryptionKey);
+
+        const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
+        const user_information = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+
         const token = localStorage.getItem("jwt_token");
-        const user_information = localStorage.getItem("user_information");
+
         if (user_information) {
           const userDataObject = JSON.parse(user_information);
           this.userRole = userDataObject.role;

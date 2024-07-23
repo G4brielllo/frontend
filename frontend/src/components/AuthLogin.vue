@@ -43,6 +43,17 @@
 
 <script>
 import axios from "@/axios";
+import CryptoJS from "crypto-js";
+
+const encryptionKey = "V3ryS3cur3K3y#2024!";
+
+function encryptData(data) {
+  const ciphertext = CryptoJS.AES.encrypt(
+    JSON.stringify(data),
+    encryptionKey
+  ).toString();
+  return ciphertext;
+}
 
 export default {
   data() {
@@ -81,10 +92,15 @@ export default {
 
             localStorage.setItem("jwt_token", response.data.token);
 
-            localStorage.setItem(
-              "user_information",
-              JSON.stringify(userInformation)
-            );
+            const userData = JSON.stringify(userInformation).toString();
+            localStorage.setItem(encryptionKey, encryptData(userData));
+
+            // localStorage.setItem("user_Data", encryptData(JSON.stringify(userInformation)));
+
+            // localStorage.setItem(
+            //   "user_information",
+            //   JSON.stringify(userInformation)
+            // );
 
             console.log("Token saved:", localStorage.getItem("jwt_token"));
 
@@ -136,10 +152,9 @@ export default {
   justify-content: center;
   padding: 8px;
 }
-.login-actions-forgot-password{
+.login-actions-forgot-password {
   display: flex;
   justify-content: center;
-
 }
 
 .v-btn {

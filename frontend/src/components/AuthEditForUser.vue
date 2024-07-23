@@ -1,5 +1,8 @@
 <template>
   <v-app>
+    <v-col cols="auto">
+      <NavigationDrawer />
+    </v-col>
     <v-container>
       <v-alert v-if="showErrorAlert" type="error" dismissible>
         Hasła nie są identyczne. Sprawdź je i spróbuj ponownie.
@@ -80,8 +83,11 @@
 
 <script>
 import axios from "@/axios";
-
+import NavigationDrawer from "@/components/NavigationDrawer.vue";
 export default {
+  components: {
+    NavigationDrawer,
+  },
   data() {
     return {
       user: {
