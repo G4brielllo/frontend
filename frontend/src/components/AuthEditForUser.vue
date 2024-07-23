@@ -37,7 +37,9 @@
                     v-model="user.password"
                     label="Nowe hasło"
                     dense
-                    :rules="[v => !!v || !user.confirmPassword || 'Wprowadź hasło']"
+                    :rules="[
+                      (v) => !!v || !user.confirmPassword || 'Wprowadź hasło',
+                    ]"
                     type="password"
                   ></v-text-field>
                 </v-col>
@@ -46,7 +48,9 @@
                     v-model="user.confirmPassword"
                     label="Potwierdź hasło"
                     dense
-                    :rules="[v => user.password === '' || !!v || 'Potwierdź hasło']"
+                    :rules="[
+                      (v) => user.password === '' || !!v || 'Potwierdź hasło',
+                    ]"
                     type="password"
                   ></v-text-field>
                 </v-col>
@@ -71,9 +75,7 @@
           </v-form>
         </v-card-text>
         <v-card-actions class="compact-actions">
-          <v-btn color="gray" @click="saveUser"
-            >Zapisz zmiany</v-btn
-          >
+          <v-btn color="gray" @click="saveUser">Zapisz zmiany</v-btn>
           <v-btn color="gray" @click="cancelEdit">Anuluj</v-btn>
         </v-card-actions>
       </v-card>
@@ -84,6 +86,17 @@
 <script>
 import axios from "@/axios";
 import NavigationDrawer from "@/components/NavigationDrawer.vue";
+import CryptoJS from "crypto-js";
+
+const encryptionKey = "V3ryS3cur3K3y#2024!";
+
+function encryptData(data) {
+  const ciphertext = CryptoJS.AES.encrypt(
+    JSON.stringify(data),
+    encryptionKey
+  ).toString();
+  return ciphertext;
+}
 export default {
   components: {
     NavigationDrawer,
@@ -105,58 +118,43 @@ export default {
     };
   },
   created() {
+    this.fetchUserData();
+    
+    // const userInformation = localStorage.getItem("user_information");
+    // if (userInformation) {
+    //   const userData = JSON.parse(userInformation);
+    //   this.user.id = userData.id;
+    //   this.user.name = userData.name;
+    //   this.user.email = userData.email;
+    //   this.user.logo = userData.logo;
+    //   console.log("Loaded user data from localStorage:", userData);
 
-    const userInformation = localStorage.getItem("user_information");
-    if (userInformation) {
-      const userData = JSON.parse(userInformation);
-      this.user.id = userData.id;
-      this.user.name = userData.name;
-      this.user.email = userData.email;
-      this.user.logo = userData.logo; 
-      console.log("Loaded user data from localStorage:", userData);
-
-     
-      if (this.user.id) {
-        this.fetchUser(this.user.id);
-      }
-    } else {
-      console.error("Nie znaleziono danych użytkownika w localStorage.");
-    }
+    //   if (this.user.id) {
+    //     this.fetchUser(this.user.id);
+    //   }
+    // } else {
+    //   console.error("Nie znaleziono danych użytkownika w localStorage.");
+    // }
   },
 
   methods: {
-    async fetchUser(userId) {
+    async fetchUserData() {
       try {
-        const token = localStorage.getItem("jwt_token");
-        if (!token) {
-          console.error("No token found. User is not logged in.");
-          return;
-        }
+        const encryptedData = localStorage.getItem(encryptionKey);
 
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/users/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.status === 200) {
-          console.log("Fetched user data:", response.data);
-          this.user.name = response.data.name;
-          this.user.email = response.data.email;
-          
-          if (response.data.logo) {
-            this.fetchImageUrl(response.data.logo);
-          }
-        } else {
-          console.error("Failed to fetch user data:", response.data);
-        }
-      } catch (error) {
+        const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
+        const user_information = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+        const userInformation = JSON.parse(user_information);
+        console.log("info", userInformation);
+        this.user.name = userInformation.name;
+        this.user.email = userInformation.email;
+        this.user.logo = userInformation.logo;
+      } catch(error) {
         console.error("Error fetching user data:", error);
       }
     },
+    
+    
 
     async fetchImageUrl(url) {
       try {
@@ -173,13 +171,15 @@ export default {
     },
 
     async saveUser() {
+      
+      
       console.log("Saving user with ID:", this.user.id);
-      
-        if (!this.validatePasswords()) {
-          this.showErrorAlert = true;
-          return;
-        }
-      
+
+      if (!this.validatePasswords()) {
+        this.showErrorAlert = true;
+        return;
+      }
+
       if (this.$refs.form.validate()) {
         try {
           const formData = new FormData();
@@ -187,7 +187,7 @@ export default {
           formData.append("email", this.user.email);
           if (this.user.password) {
             formData.append("password", this.user.password);
-          }else{
+          } else {
             formData.append("password", this.user.password);
           }
           if (this.image) {
@@ -197,22 +197,33 @@ export default {
           console.log("Saving user data:", formData);
 
           const response = await axios.put(
-            `http://127.0.0.1:8000/api/users/${this.user.id}`,
+            `http://127.0.0.1:8000/api/users/7`,
             formData
           );
 
           if (response.status === 200 || response.status === 201) {
             console.log("User updated successfully:", response.data);
 
-            localStorage.setItem(
-              "user_information",
-              JSON.stringify({
+            const updatedUser ={
                 id: this.user.id,
                 name: this.user.name,
                 email: this.user.email,
                 logo: this.user.logo,
-              })
-            );
+            };
+            const userData = JSON.stringify(updatedUser).toString();
+            localStorage.setItem(encryptionKey, encryptData(userData));
+
+
+
+            // localStorage.setItem(
+            //   "user_information",
+            //   JSON.stringify({
+            //     id: this.user.id,
+            //     name: this.user.name,
+            //     email: this.user.email,
+            //     logo: this.user.logo,
+            //   })
+            // );
 
             this.clearForm();
             this.$router.push("/");

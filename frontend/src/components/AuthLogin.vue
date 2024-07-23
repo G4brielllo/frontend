@@ -85,11 +85,12 @@ export default {
             const userInformation = {
               id: response.data.id,
               name: response.data.name,
-              email: response.data.user,
+              email: response.data.email,
               token: response.data.token,
               role: response.data.role,
+              logo: response.data.logo,
             };
-
+            console.log("info", userInformation);
             localStorage.setItem("jwt_token", response.data.token);
 
             const userData = JSON.stringify(userInformation).toString();
