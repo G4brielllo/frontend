@@ -269,7 +269,7 @@ export default {
     },
     cancelEdit() {
       this.clearForm();
-      this.$router.push("/");
+      this.$router.push("/listUsers");
     },
 
     clearForm() {

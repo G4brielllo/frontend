@@ -61,28 +61,28 @@
               ></v-img>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
-              <v-btn
-                color="gray"
-                @click="editItem(item)"
-                text
-                class="compact-btn"
-                >Edytuj</v-btn
-              >
-              <v-btn
-                color="gray"
-                @click="deleteItem(item)"
-                text
-                class="compact-btn"
-                >Usuń</v-btn
-              >
+              <template v-if="isAdmin">
+                <v-btn
+                  color="gray"
+                  @click="editItem(item)"
+                  text
+                  class="compact-btn"
+                >Edytuj</v-btn>
+                <v-btn
+                  color="gray"
+                  @click="deleteItem(item)"
+                  text
+                  class="compact-btn"
+                >Usuń</v-btn>
+              </template>
             </template>
           </v-data-table>
         </v-card-text>
         <v-card-actions class="d-flex justify-center">
-          <v-btn color="gray" @click="addClient" class="mx-2">Dodaj</v-btn>
-          <v-btn color="gray" @click="returnToHomePage" class="mx-2"
-            >Wróć</v-btn
-          >
+          <template v-if="isAdmin">
+            <v-btn color="gray" @click="addClient" class="mx-2">Dodaj</v-btn>
+          </template>
+          <v-btn color="gray" @click="returnToHomePage" class="mx-2">Wróć</v-btn>
         </v-card-actions>
       </v-card>
     </v-container>
@@ -93,6 +93,10 @@
 import axios from "@/axios";
 import woman from "@/assets/woman.png";
 import NavigationDrawer from "@/components/NavigationDrawer.vue";
+import CryptoJS from "crypto-js";
+
+const encryptionKey = "V3ryS3cur3K3y#2024!";
+
 export default {
   name: "ListClients",
   components: {
@@ -102,16 +106,11 @@ export default {
     return {
       search: "",
       menu: false,
+      userRole: null,
+      isAdmin: false,
       menuDate: null,
       woman: woman,
-      headers: [
-        { text: "L.p.", value: "id" },
-        { text: "Nazwa", value: "name" },
-        { text: "Logotyp", value: "logo" },
-        { text: "Kraj", value: "country" },
-        { text: "Data dodania", value: "formatted_created_at" },
-        { text: "Akcje", value: "actions", sortable: false },
-      ],
+      headers: this.getHeaders(), // Ustaw nagłówki w zależności od roli
       clients: [],
       isHovered: false,
     };
@@ -136,20 +135,58 @@ export default {
     },
   },
   methods: {
-    goToHomePage() {
-      this.$root.push("/returnToHomePage");
+    getHeaders() {
+      const baseHeaders = [
+        { text: "L.p.", value: "id" },
+        { text: "Nazwa", value: "name" },
+        { text: "Logotyp", value: "logo" },
+        { text: "Kraj", value: "country" },
+        { text: "Data dodania", value: "formatted_created_at" },
+      ];
+      
+      if (this.isAdmin) {
+        baseHeaders.push({ text: "Akcje", value: "actions", sortable: false });
+      }
+      
+      return baseHeaders;
     },
-    goToListProjects() {
-      this.$router.push("/listProjects");
-    },
-    goToListEstimations() {
-      this.$router.push("/listEstimations");
-    },
-    goToLogin() {
-      this.$router.push("/login");
-    },
-    toggleHover(value) {
-      this.isHovered = value;
+    async fetchUserData() {
+      try {
+        const encryptedData = localStorage.getItem(encryptionKey);
+        const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
+        const user_information = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+
+        const token = localStorage.getItem("jwt_token");
+
+        if (user_information) {
+          const userDataObject = JSON.parse(user_information);
+          this.userRole = userDataObject.role;
+          this.isAdmin = this.userRole === "admin";
+          this.headers = this.getHeaders(); // Zaktualizuj nagłówki
+        } else {
+          console.error("User information not found in localStorage.");
+        }
+
+        if (!token) {
+          console.error("No token found. User is not logged in.");
+          return;
+        }
+
+        const response = await axios.get("http://127.0.0.1:8000/api/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          const loggedInUserData = response.data;
+          this.userId = loggedInUserData.id;
+        } else {
+          console.error("Failed to fetch user data:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
     },
     async fetchClients() {
       try {
@@ -202,6 +239,7 @@ export default {
   },
   created() {
     this.fetchClients();
+    this.fetchUserData();
   },
 };
 </script>
@@ -231,8 +269,6 @@ export default {
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
   width: 80%;
   max-width: 1200px;
-  /* margin: auto; */
-  /* margin-top: 5%; */
   margin-bottom: 30%;
 }
 

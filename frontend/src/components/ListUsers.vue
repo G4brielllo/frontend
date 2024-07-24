@@ -16,33 +16,6 @@
             hide-details
             class="compact-search-field"
           ></v-text-field>
-          <v-menu
-            v-model="menu"
-            :close-on-content-click="false"
-            transition="scale-transition"
-            offset-y
-            full-width
-            min-width="290px"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                v-model="menuDate"
-                label="Wybierz datę"
-                prepend-icon="mdi-calendar"
-                readonly
-                v-bind="attrs"
-                v-on="on"
-                clearable
-                hide-details
-                class="compact-date-field"
-              ></v-text-field>
-            </template>
-            <v-date-picker
-              v-model="menuDate"
-              no-title
-              @input="menu = false"
-            ></v-date-picker>
-          </v-menu>
         </v-toolbar>
         <v-card-text>
           <v-data-table
@@ -97,13 +70,10 @@ export default {
   data() {
     return {
       search: "",
-      menu: false,
-      menuDate: null,
       headers: [
         { text: "L.p.", value: "id" },
         { text: "Nazwa", value: "name" },
         { text: "email", value: "email" },
-        { text: "Logotyp", value: "logo" },
         { text: "Akcje", value: "actions", sortable: false },
       ],
       users: [],
@@ -189,8 +159,7 @@ export default {
   margin-top: 20px;
 }
 
-.compact-search-field,
-.compact-date-field {
+.compact-search-field {
   max-width: 200px;
 }
 

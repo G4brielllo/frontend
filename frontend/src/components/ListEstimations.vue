@@ -3,7 +3,7 @@
     <v-col cols="auto">
       <NavigationDrawer />
     </v-col>
-    <v-container class="fill-height d-flex align-center justify-center">
+    <v-container class="d-flex align-center justify-center">
       <v-card class="compact-card">
         <v-toolbar color="black" dark>
           <v-toolbar-title>Lista Wycen</v-toolbar-title>
@@ -29,29 +29,33 @@
             class="compact-data-table"
           >
             <template v-slot:[`item.actions`]="{ item }">
-              <v-btn color="gray" @click="editItem(item)" text>Edytuj</v-btn>
-              <v-btn color="gray" @click="deleteItem(item)" text>Usuń</v-btn>
+              <template v-if="isAdmin">
+                <v-btn color="gray" @click="editItem(item)" text>Edytuj</v-btn>
+                <v-btn color="gray" @click="deleteItem(item)" text>Usuń</v-btn>
+              </template>
             </template>
           </v-data-table>
         </v-card-text>
         <v-row class="operation-buttons">
           <v-col cols="auto">
-            <v-menu open-on-hover>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn color="gray" v-bind="attrs" v-on="on">Opcje</v-btn>
-              </template>
-              <v-list>
-                <v-list-item @click="goToAddEstimation">
-                  <v-list-item-title>Dodaj Wycenę</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="goToAddClient">
-                  <v-list-item-title>Dodaj Klienta</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="goToAddProject">
-                  <v-list-item-title>Dodaj Projekt</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <template v-if="isAdmin">
+              <v-menu open-on-hover>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn color="gray" v-bind="attrs" v-on="on">Opcje</v-btn>
+                </template>
+                <v-list>
+                  <v-list-item @click="goToAddEstimation">
+                    <v-list-item-title>Dodaj Wycenę</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="goToAddClient">
+                    <v-list-item-title>Dodaj Klienta</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="goToAddProject">
+                    <v-list-item-title>Dodaj Projekt</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </template>
           </v-col>
           <v-col cols="auto">
             <v-btn @click="returnToHomePage">Wróć</v-btn>
@@ -66,6 +70,10 @@
 import axios from "@/axios";
 import woman from "@/assets/woman.png";
 import NavigationDrawer from "@/components/NavigationDrawer.vue";
+import CryptoJS from "crypto-js";
+
+const encryptionKey = "V3ryS3cur3K3y#2024!";
+
 export default {
   name: "ListEstimation",
   components: {
@@ -74,7 +82,15 @@ export default {
   data() {
     return {
       search: "",
-      headers: [
+      estimations: [],
+      woman: woman,
+      isAdmin: false,
+      isHovered: false,
+    };
+  },
+  computed: {
+    headers() {
+      const baseHeaders = [
         { text: "L.p.", align: "start", sortable: false, value: "id" },
         { text: "Nazwa", value: "name" },
         { text: "Projekt", value: "project.name" },
@@ -82,17 +98,57 @@ export default {
         { text: "Wycena", value: "type" },
         { text: "Kwota", value: "amount" },
         { text: "Data wykonania", value: "date" },
-        { text: "Akcje", value: "actions", sortable: false },
-      ],
-      estimations: [],
-      woman: woman,
-      isHovered: false,
-    };
+      ];
+      
+      if (this.isAdmin) {
+        baseHeaders.push({ text: "Akcje", value: "actions", sortable: false });
+      }
+      
+      return baseHeaders;
+    },
   },
   mounted() {
+    this.fetchUserData();
     this.fetchEstimations();
   },
   methods: {
+    async fetchUserData() {
+      try {
+        const encryptedData = localStorage.getItem(encryptionKey);
+        const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
+        const user_information = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+
+        const token = localStorage.getItem("jwt_token");
+
+        if (user_information) {
+          const userDataObject = JSON.parse(user_information);
+          this.isAdmin = userDataObject.role === "admin";
+        } else {
+          console.error("User information not found in localStorage.");
+        }
+
+        if (!token) {
+          console.error("No token found. User is not logged in.");
+          return;
+        }
+
+        const response = await axios.get("http://127.0.0.1:8000/api/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          const loggedInUserData = response.data;
+          this.userId = loggedInUserData.id;
+        } else {
+          console.error("Failed to fetch user data:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    },
+
     goToHomePage() {
       this.$router.push("/returnToHomePage");
     },
@@ -102,7 +158,6 @@ export default {
     goToListProjects() {
       this.$router.push("/listProjects");
     },
-
     goToLogin() {
       this.$router.push("/login");
     },
@@ -111,9 +166,7 @@ export default {
     },
     async fetchEstimations() {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/estimations"
-        );
+        const response = await axios.get("http://127.0.0.1:8000/api/estimations");
         this.estimations = response.data.map((estimation) => ({
           id: estimation.id,
           name: estimation.name,
@@ -163,6 +216,11 @@ export default {
 <style scoped>
 @import "~@mdi/font/css/materialdesignicons.css";
 
+v-col,
+v-container {
+  flex-direction: column;
+}
+
 .compact-card {
   background-color: #f8f9fa;
   border-radius: 12px;
@@ -170,7 +228,9 @@ export default {
   padding: 16px;
   width: 80%;
   max-width: 1200px;
-  margin-bottom: 30%;
+  margin-bottom: 30px;
+  overflow-y: auto;
+  max-height: calc(100vh - 100px);
 }
 
 .compact-search-field {
@@ -180,10 +240,6 @@ export default {
 .compact-data-table {
   margin-top: 20px;
 }
-
-/* .fill-height {
-  height: 100vh;
-} */
 
 .operation-buttons {
   margin-top: 10px;
@@ -206,6 +262,7 @@ export default {
   transition: all 0.3s ease;
   overflow: hidden;
 }
+
 .user-info {
   padding: 8px;
   text-align: center;
@@ -214,8 +271,5 @@ export default {
 .v-navigation-drawer:hover .image-woman {
   width: 100px;
   height: 100px;
-}
-.app-container {
-  max-height: 100px;
 }
 </style>

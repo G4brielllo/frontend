@@ -63,16 +63,20 @@
             :item-key="'id'"
           >
             <template v-slot:[`item.actions`]="{ item }">
-              <v-btn color="gray" @click="editProject(item)" text>Edytuj</v-btn>
-              <v-btn color="gray" @click="deleteProject(item)" text>Usuń</v-btn>
+              <template v-if="isAdmin">
+                <v-btn color="gray" @click="editProject(item)" text>Edytuj</v-btn>
+                <v-btn color="gray" @click="deleteProject(item)" text>Usuń</v-btn>
+              </template>
             </template>
           </v-data-table>
         </v-card-text>
         <v-card-actions class="d-flex justify-center">
-          <v-btn class="mx-2" color="gray" @click="addProject">Dodaj</v-btn>
-          <v-btn class="mx-2" color="gray" @click="returnToHomePage"
+          <template v-if="isAdmin">
+            <v-btn class="mx-2" color="gray" @click="addProject">Dodaj</v-btn>
+          </template>
+            <v-btn class="mx-2" color="gray" @click="returnToHomePage"
             >Wróć</v-btn
-          >
+            >
         </v-card-actions>
       </v-card>
     </v-container>
@@ -83,6 +87,9 @@
 import axios from "@/axios";
 import woman from "@/assets/woman.png";
 import NavigationDrawer from "@/components/NavigationDrawer.vue";
+import CryptoJS from "crypto-js";
+
+const encryptionKey = "V3ryS3cur3K3y#2024!";
 export default {
   name: "ListProjects",
   components: {
@@ -95,19 +102,9 @@ export default {
       selectedDate: null,
       datePicker: false,
       woman: woman,
+      isAdmin: false,
       isHovered: false,
-      headers: [
-        { text: "L.p.", align: "start", value: "id" },
-        { text: "Klient", value: "client_name" },
-        { text: "Nazwa Projektu", value: "name" },
-        {
-          text: "Szacunkowa Wartość",
-          value: "total_estimation",
-          sortable: false,
-        },
-        { text: "Data dodania", value: "formatted_created_at" },
-        { text: "Akcje", value: "actions", sortable: false },
-      ],
+      headers: this.getHeaders(),
       clients: [],
       projects: [],
       estimations: [],
@@ -144,6 +141,63 @@ export default {
     },
   },
   methods: {
+    getHeaders() {
+      const baseHeaders = [
+        { text: "L.p.", align: "start", value: "id" },
+        { text: "Klient", value: "client_name" },
+        { text: "Nazwa Projektu", value: "name" },
+        {
+          text: "Szacunkowa Wartość",
+          value: "total_estimation",
+          sortable: false,
+        },
+        { text: "Data dodania", value: "formatted_created_at" },
+      ];
+      
+      if (this.isAdmin) {
+        baseHeaders.push({ text: "Akcje", value: "actions", sortable: false });
+      }
+      
+      return baseHeaders;
+    },
+    async fetchUserData() {
+      try {
+        const encryptedData = localStorage.getItem(encryptionKey);
+        const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
+        const user_information = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+
+        const token = localStorage.getItem("jwt_token");
+
+        if (user_information) {
+          const userDataObject = JSON.parse(user_information);
+          this.userRole = userDataObject.role;
+          this.isAdmin = this.userRole === "admin";
+          this.headers = this.getHeaders(); // Zaktualizuj nagłówki
+        } else {
+          console.error("User information not found in localStorage.");
+        }
+
+        if (!token) {
+          console.error("No token found. User is not logged in.");
+          return;
+        }
+
+        const response = await axios.get("http://127.0.0.1:8000/api/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          const loggedInUserData = response.data;
+          this.userId = loggedInUserData.id;
+        } else {
+          console.error("Failed to fetch user data:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    },
     goToHomePage() {
       this.$root.push("/returnToHomePage");
     },
@@ -261,6 +315,7 @@ export default {
     await this.fetchProjects();
     await this.fetchEstimations();
     await this.fetchClients();
+    this.fetchUserData();
   },
 };
 </script>

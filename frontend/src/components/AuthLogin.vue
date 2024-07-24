@@ -80,8 +80,6 @@ export default {
           );
 
           if (response.status === 200) {
-            console.log("Login successful:", response.data);
-
             const userInformation = {
               id: response.data.id,
               name: response.data.name,
@@ -90,18 +88,11 @@ export default {
               role: response.data.role,
               logo: response.data.logo,
             };
-            console.log("info", userInformation);
             localStorage.setItem("jwt_token", response.data.token);
 
             const userData = JSON.stringify(userInformation).toString();
             localStorage.setItem(encryptionKey, encryptData(userData));
 
-            // localStorage.setItem("user_Data", encryptData(JSON.stringify(userInformation)));
-
-            // localStorage.setItem(
-            //   "user_information",
-            //   JSON.stringify(userInformation)
-            // );
 
             console.log("Token saved:", localStorage.getItem("jwt_token"));
 

@@ -10,7 +10,7 @@
     <v-row align="center" justify="center">
       <v-col cols="auto" class="text-center position-relative">
         <v-img
-          :src="woman"
+          :src="userLogo || woman"
           :class="{
             'image-woman': !isHovered,
             'image-woman-large': isHovered,
@@ -153,12 +153,7 @@ import axios from "@/axios";
 import CryptoJS from "crypto-js";
 
 const encryptionKey = "V3ryS3cur3K3y#2024!";
-// const user_information = null;
-// function decryptData(ciphertext) {
-//   const bytes = CryptoJS.AES.decrypt(ciphertext, encryptionKey);
-//   const originalData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-//   return originalData;
-// }
+
 export default {
   name: "NavigationDrawer",
   data() {
@@ -169,6 +164,7 @@ export default {
       isAdmin: false,
       userId: null,
       userRole: null,
+      userLogo: null,
     };
   },
   created() {
@@ -187,8 +183,8 @@ export default {
         if (user_information) {
           const userDataObject = JSON.parse(user_information);
           this.userRole = userDataObject.role;
-
           this.isAdmin = this.userRole === "admin";
+          this.userLogo = userDataObject.logo;
         } else {
           console.error("User information not found in localStorage.");
         }
@@ -256,6 +252,7 @@ export default {
           console.log("Logout successful:", response.data);
           localStorage.removeItem("jwt_token");
           localStorage.removeItem("user_information");
+          localStorage.removeItem("V3ryS3cur3K3y#2024!");
           this.$router.push("/login");
         } else {
           console.error("Logout failed:", response.data);
