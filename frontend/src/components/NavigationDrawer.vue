@@ -253,6 +253,7 @@ export default {
           localStorage.removeItem("jwt_token");
           localStorage.removeItem("user_information");
           localStorage.removeItem("V3ryS3cur3K3y#2024!");
+          localStorage.removeItem("alertShown");
           this.$router.push("/login");
         } else {
           console.error("Logout failed:", response.data);

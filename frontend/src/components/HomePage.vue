@@ -7,6 +7,19 @@
         </v-col>
         <v-col>
           <v-container>
+             <!-- Alert for welcoming user -->
+             <v-row justify="center" v-if="welcomeAlert">
+              <v-col cols="12" md="8" lg="6">
+                <v-alert
+                  type="success"
+                  dismissible
+                  transition="scale-transition"
+                  v-model="welcomeAlert"
+                >
+                  Witaj, {{ userName }}!
+                </v-alert>
+              </v-col>
+            </v-row>
             <v-row justify="center">
               <v-col cols="12" md="8" lg="6">
                 <v-card class="mx-auto" max-width="800" elevation="10" rounded>
@@ -68,6 +81,9 @@ import estimation from "@/assets/budgeting.png";
 import woman from "@/assets/woman.png";
 import axios from "@/axios";
 import NavigationDrawer from "@/components/NavigationDrawer.vue";
+import CryptoJS from "crypto-js";
+
+const encryptionKey = "V3ryS3cur3K3y#2024!";
 
 export default {
   name: "HomePageComponent",
@@ -81,11 +97,55 @@ export default {
       estimation: estimation,
       woman: woman,
       isHovered: false,
+      welcomeAlert: false,
+      userName: "",
+      alertShown: false,
     };
+  },created() {
+    this.fetchUserData();
   },
 
   methods: {
-    
+    async fetchUserData() {
+      try {
+        const encryptedData = localStorage.getItem(encryptionKey);
+
+        const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
+        const user_information = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+
+        const token = localStorage.getItem("jwt_token");
+
+        if (user_information) {
+          const userDataObject = JSON.parse(user_information);
+          this.userName = userDataObject.name;
+        } else {
+          console.error("User information not found in localStorage.");
+        }
+
+        if (!token) {
+          console.error("No token found. User is not logged in.");
+          return;
+        }
+
+        const response = await axios.get("http://127.0.0.1:8000/api/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200 && !localStorage.getItem("alertShown")) {
+          this.welcomeAlert = true;
+          localStorage.setItem("alertShown", "true");
+          setTimeout(() => {
+            this.welcomeAlert = false;
+          }, 3000);
+        } else {
+          console.error("Failed to fetch user data:");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    },
     goToListClients() {
       this.$router.push("/listClients");
     },
@@ -127,6 +187,7 @@ export default {
           console.log("Logout successful:", response.data);
           localStorage.removeItem("jwt_token");
           this.$router.push("/login");
+          localStorage.removeItem("alertShown");
         } else {
           console.error("Logout failed:", response.data);
         }
