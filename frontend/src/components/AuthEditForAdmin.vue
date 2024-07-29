@@ -68,13 +68,6 @@
                   </div>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-select
-                    v-model="user.role"
-                    :items="roles"
-                    label="Rola"
-                    dense
-                    required
-                  ></v-select>
                 </v-col>
               </v-row>
             </v-container>
@@ -104,13 +97,11 @@ export default {
         password: "",
         confirmPassword: "",
         logo: "",
-        role: '',
       },
       valid: true,
       image: null,
       base64: null,
       showErrorAlert: false,
-      roles: ['admin', 'user'],
     };
   },
   created() {
@@ -121,56 +112,10 @@ export default {
       console.error("No user ID provided in query parameters.");
     }
 
-    // const userInformation = localStorage.getItem("user_information");
-    // if (userInformation) {
-    //   const userData = JSON.parse(userInformation);
-    //   this.user.id = userData.id;
-    //   this.user.name = userData.name;
-    //   this.user.email = userData.email;
-    //   this.user.logo = userData.logo;
-    //   console.log("Loaded user data from localStorage:", userData);
-
-    //   if (this.user.id) {
-    //     this.fetchUser(this.user.id);
-    //   }
-    // } else {
-    //   console.error("Nie znaleziono danych użytkownika w localStorage.");
-    // }
   },
 
   methods: {
-    //   async fetchUser(userId) {
-    //     try {
-    //       const token = localStorage.getItem("jwt_token");
-    //       if (!token) {
-    //         console.error("No token found. User is not logged in.");
-    //         return;
-    //       }
-
-    //       const response = await axios.get(
-    //         `http://127.0.0.1:8000/api/users/${userId}`,
-    //         {
-    //           headers: {
-    //             Authorization: `Bearer ${token}`,
-    //           },
-    //         }
-    //       );
-
-    //       if (response.status === 200) {
-    //         console.log("Fetched user data:", response.data);
-    //         this.user.name = response.data.name;
-    //         this.user.email = response.data.email;
-
-    //         if (response.data.logo) {
-    //           this.fetchImageUrl(response.data.logo);
-    //         }
-    //       } else {
-    //         console.error("Failed to fetch user data:", response.data);
-    //       }
-    //     } catch (error) {
-    //       console.error("Error fetching user data:", error);
-    //     }
-    //   },
+   
 
     async fetchUser(userId) {
       try {
@@ -182,7 +127,6 @@ export default {
         this.user.id = userData.id;
         this.user.name = userData.name;
         this.user.email = userData.email;
-        this.user.role = userData.role;
         this.user.logo = userData.logo;
 
         if (this.isImageUrl(userData.logo)) {
@@ -218,7 +162,6 @@ export default {
           const formData = new FormData();
           formData.append("name", this.user.name);
           formData.append("email", this.user.email);
-          formData.append("role", this.user.role); 
   
 
           if (this.user.password) {
@@ -283,7 +226,6 @@ export default {
       this.base64 = null;
       this.image = null;
       this.showErrorAlert = false;
-      this.role = "";
     },
 
     createBase64Image(file) {
