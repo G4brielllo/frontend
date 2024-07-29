@@ -120,7 +120,7 @@ export default {
       });
     },
     addUser() {
-      this.$router.push("/addUser");
+      this.$router.push("/register");
     },
     returnToHomePage() {
       this.$router.push("/");

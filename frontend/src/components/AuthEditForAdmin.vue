@@ -71,7 +71,7 @@
                   <v-select
                     v-model="user.role"
                     :items="roles"
-                    label="Kraj"
+                    label="Rola"
                     dense
                     required
                   ></v-select>
@@ -104,13 +104,13 @@ export default {
         password: "",
         confirmPassword: "",
         logo: "",
-        role: "",
+        role: '',
       },
       valid: true,
       image: null,
       base64: null,
       showErrorAlert: false,
-      roles: ["admin", "user"],
+      roles: ['admin', 'user'],
     };
   },
   created() {
@@ -219,6 +219,7 @@ export default {
           formData.append("name", this.user.name);
           formData.append("email", this.user.email);
           formData.append("role", this.user.role); 
+  
 
           if (this.user.password) {
             formData.append("password", this.user.password);

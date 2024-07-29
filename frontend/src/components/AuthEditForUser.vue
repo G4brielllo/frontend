@@ -172,7 +172,12 @@ export default {
 
     async saveUser() {
       
-      
+      const encryptedData = localStorage.getItem(encryptionKey);
+
+        const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
+        const user_information = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+        const userInformation = JSON.parse(user_information);
+        this.user.id= userInformation.id;
       console.log("Saving user with ID:", this.user.id);
 
       if (!this.validatePasswords()) {
@@ -197,7 +202,7 @@ export default {
           console.log("Saving user data:", formData);
 
           const response = await axios.put(
-            `http://127.0.0.1:8000/api/users/7`,
+            `http://127.0.0.1:8000/api/users/${this.user.id}`,
             formData
           );
 
