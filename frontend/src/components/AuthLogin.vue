@@ -89,17 +89,14 @@ export default {
               logo: response.data.logo,
             };
             localStorage.setItem("jwt_token", response.data.token);
-
+            axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`; 
             const userData = JSON.stringify(userInformation).toString();
             localStorage.setItem(encryptionKey, encryptData(userData));
 
 
             console.log("Token saved:", localStorage.getItem("jwt_token"));
 
-            console.log(
-              "User information saved:",
-              localStorage.getItem("user_information")
-            );
+         
             this.clearForm();
             this.showErrorAlert = false;
             this.$router.push("/");
