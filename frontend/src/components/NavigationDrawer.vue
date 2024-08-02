@@ -34,6 +34,7 @@
       </v-list-item>
 
       <v-list-item
+        v-if="isLoggedIn()"
         :disabled="isCurrentRoute('/listClients')"
         @mouseover="toggleListItemHover(true, 'clients')"
         @mouseleave="toggleListItemHover(false, 'clients')"
@@ -48,6 +49,7 @@
       </v-list-item>
 
       <v-list-item
+        v-if="isLoggedIn()"
         :disabled="isCurrentRoute('/listProjects')"
         @mouseover="toggleListItemHover(true, 'projects')"
         @mouseleave="toggleListItemHover(false, 'projects')"
@@ -62,6 +64,7 @@
       </v-list-item>
 
       <v-list-item
+        v-if="isLoggedIn()"
         :disabled="isCurrentRoute('/listEstimations')"
         @mouseover="toggleListItemHover(true, 'estimations')"
         @mouseleave="toggleListItemHover(false, 'estimations')"
