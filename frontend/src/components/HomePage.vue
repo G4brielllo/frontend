@@ -7,8 +7,7 @@
         </v-col>
         <v-col>
           <v-container>
-             <!-- Alert for welcoming user -->
-             <v-row justify="center" v-if="welcomeAlert">
+            <v-row justify="center" v-if="welcomeAlert">
               <v-col cols="12" md="8" lg="6">
                 <v-alert
                   type="success"
@@ -100,8 +99,10 @@ export default {
       welcomeAlert: false,
       userName: "",
       alertShown: false,
+      token: false,
     };
-  },created() {
+  },
+  created() {
     this.fetchUserData();
   },
 
@@ -121,12 +122,10 @@ export default {
         } else {
           console.error("User information not found in localStorage.");
         }
-
         if (!token) {
           console.error("No token found. User is not logged in.");
           return;
         }
-
         const response = await axios.get("http://127.0.0.1:8000/api/users", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -147,13 +146,28 @@ export default {
       }
     },
     goToListClients() {
-      this.$router.push("/listClients");
+      const token = localStorage.getItem("jwt_token");
+      if (token) {
+        this.$router.push("/listClients");
+      } else {
+        this.goToLogin();
+      }
     },
     goToListProjects() {
-      this.$router.push("/listProjects");
+      const token = localStorage.getItem("jwt_token");
+      if (token) {
+        this.$router.push("/listProjects");
+      } else {
+        this.goToLogin();
+      }
     },
     goToListEstimations() {
-      this.$router.push("/listEstimations");
+      const token = localStorage.getItem("jwt_token");
+      if (token) {
+        this.$router.push("/listEstimations");
+      } else {
+        this.goToLogin();
+      }
     },
     goToLogin() {
       this.$router.push("/login");
@@ -200,7 +214,6 @@ export default {
 </script>
 
 <style>
-
 .headline {
   justify-content: center;
 }
