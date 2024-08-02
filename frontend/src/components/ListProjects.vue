@@ -64,8 +64,12 @@
           >
             <template v-slot:[`item.actions`]="{ item }">
               <template v-if="isAdmin">
-                <v-btn color="gray" @click="editProject(item)" text>Edytuj</v-btn>
-                <v-btn color="gray" @click="deleteProject(item)" text>Usuń</v-btn>
+                <v-btn color="gray" @click="editProject(item)" text
+                  >Edytuj</v-btn
+                >
+                <v-btn color="gray" @click="deleteProject(item)" text
+                  >Usuń</v-btn
+                >
               </template>
             </template>
           </v-data-table>
@@ -74,9 +78,9 @@
           <template v-if="isAdmin">
             <v-btn class="mx-2" color="gray" @click="addProject">Dodaj</v-btn>
           </template>
-            <v-btn class="mx-2" color="gray" @click="returnToHomePage"
+          <v-btn class="mx-2" color="gray" @click="returnToHomePage"
             >Wróć</v-btn
-            >
+          >
         </v-card-actions>
       </v-card>
     </v-container>
@@ -153,11 +157,11 @@ export default {
         },
         { text: "Data dodania", value: "formatted_created_at" },
       ];
-      
+
       if (this.isAdmin) {
         baseHeaders.push({ text: "Akcje", value: "actions", sortable: false });
       }
-      
+
       return baseHeaders;
     },
     async fetchUserData() {
@@ -305,10 +309,6 @@ export default {
     editProject(project) {
       this.$router.push({ path: "/addProject", query: { id: project.id } });
     },
-
-    deleteProject1(project) {
-      console.log("Usuń projekt:", project);
-    },
   },
 
   async created() {
@@ -326,14 +326,12 @@ export default {
   border-radius: 12px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
   padding: 16px;
-  /* margin: auto;  */
-  /* margin-top: 10%; */
   margin-bottom: 90%;
   width: 82%;
-  max-width: 1200px; 
+  max-width: 1200px;
 }
 body {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .compact-search-field,
@@ -378,5 +376,4 @@ body {
   width: 100px;
   height: 100px;
 }
-
 </style>

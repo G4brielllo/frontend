@@ -119,22 +119,6 @@ export default {
   },
   created() {
     this.fetchUserData();
-    
-    // const userInformation = localStorage.getItem("user_information");
-    // if (userInformation) {
-    //   const userData = JSON.parse(userInformation);
-    //   this.user.id = userData.id;
-    //   this.user.name = userData.name;
-    //   this.user.email = userData.email;
-    //   this.user.logo = userData.logo;
-    //   console.log("Loaded user data from localStorage:", userData);
-
-    //   if (this.user.id) {
-    //     this.fetchUser(this.user.id);
-    //   }
-    // } else {
-    //   console.error("Nie znaleziono danych użytkownika w localStorage.");
-    // }
   },
 
   methods: {
@@ -145,16 +129,13 @@ export default {
         const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
         const user_information = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
         const userInformation = JSON.parse(user_information);
-        console.log("info", userInformation);
         this.user.name = userInformation.name;
         this.user.email = userInformation.email;
         this.user.logo = userInformation.logo;
-      } catch(error) {
+      } catch (error) {
         console.error("Error fetching user data:", error);
       }
     },
-    
-    
 
     async fetchImageUrl(url) {
       try {
@@ -171,13 +152,12 @@ export default {
     },
 
     async saveUser() {
-      
       const encryptedData = localStorage.getItem(encryptionKey);
 
-        const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
-        const user_information = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-        const userInformation = JSON.parse(user_information);
-        this.user.id= userInformation.id;
+      const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
+      const user_information = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+      const userInformation = JSON.parse(user_information);
+      this.user.id = userInformation.id;
       console.log("Saving user with ID:", this.user.id);
 
       if (!this.validatePasswords()) {
@@ -209,26 +189,14 @@ export default {
           if (response.status === 200 || response.status === 201) {
             console.log("User updated successfully:", response.data);
 
-            const updatedUser ={
-                id: this.user.id,
-                name: this.user.name,
-                email: this.user.email,
-                logo: this.user.logo,
+            const updatedUser = {
+              id: this.user.id,
+              name: this.user.name,
+              email: this.user.email,
+              logo: this.user.logo,
             };
             const userData = JSON.stringify(updatedUser).toString();
             localStorage.setItem(encryptionKey, encryptData(userData));
-
-
-
-            // localStorage.setItem(
-            //   "user_information",
-            //   JSON.stringify({
-            //     id: this.user.id,
-            //     name: this.user.name,
-            //     email: this.user.email,
-            //     logo: this.user.logo,
-            //   })
-            // );
 
             this.clearForm();
             this.$router.push("/");

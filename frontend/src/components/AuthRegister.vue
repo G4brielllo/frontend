@@ -48,15 +48,19 @@
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-file-input 
-                    v-model="image" 
-                    label="Logo" 
-                    accept="image/*" 
-                    @change="createBase64Image" 
+                  <v-file-input
+                    v-model="image"
+                    label="Logo"
+                    accept="image/*"
+                    @change="createBase64Image"
                     dense
                   ></v-file-input>
                   <div v-if="user.logo">
-                    <img :src="user.logo" alt="User Logo" style="max-width: 100px; max-height: 100px;" />
+                    <img
+                      :src="user.logo"
+                      alt="User Logo"
+                      style="max-width: 100px; max-height: 100px"
+                    />
                   </div>
                 </v-col>
               </v-row>
@@ -67,7 +71,9 @@
           <v-btn color="gray" @click="saveUser">Zapisz</v-btn>
           <v-btn color="gray" @click="cancelUserAdding">Anuluj</v-btn>
           <v-spacer></v-spacer>
-          <v-btn class="login-btn" color="gray" @click="login">Zaloguj się</v-btn>
+          <v-btn class="login-btn" color="gray" @click="login"
+            >Zaloguj się</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-container>
@@ -111,7 +117,7 @@ export default {
 
           console.log("FormData content:");
           for (const pair of formData.entries()) {
-            console.log(pair[0] + ': ' + pair[1]);
+            console.log(pair[0] + ": " + pair[1]);
           }
 
           const response = await axios.post(
@@ -174,8 +180,8 @@ export default {
 
 <style scoped>
 .register-card {
-  width: 100%; 
-  max-width: 80%; 
+  width: 100%;
+  max-width: 80%;
   border-radius: 12px;
   margin: auto;
   padding: 16px;

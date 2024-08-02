@@ -67,13 +67,15 @@
                   @click="editItem(item)"
                   text
                   class="compact-btn"
-                >Edytuj</v-btn>
+                  >Edytuj</v-btn
+                >
                 <v-btn
                   color="gray"
                   @click="deleteItem(item)"
                   text
                   class="compact-btn"
-                >Usuń</v-btn>
+                  >Usuń</v-btn
+                >
               </template>
             </template>
           </v-data-table>
@@ -82,7 +84,9 @@
           <template v-if="isAdmin">
             <v-btn color="gray" @click="addClient" class="mx-2">Dodaj</v-btn>
           </template>
-          <v-btn color="gray" @click="returnToHomePage" class="mx-2">Wróć</v-btn>
+          <v-btn color="gray" @click="returnToHomePage" class="mx-2"
+            >Wróć</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-container>
@@ -110,7 +114,7 @@ export default {
       isAdmin: false,
       menuDate: null,
       woman: woman,
-      headers: this.getHeaders(), // Ustaw nagłówki w zależności od roli
+      headers: this.getHeaders(),
       clients: [],
       isHovered: false,
     };
@@ -143,11 +147,11 @@ export default {
         { text: "Kraj", value: "country" },
         { text: "Data dodania", value: "formatted_created_at" },
       ];
-      
+
       if (this.isAdmin) {
         baseHeaders.push({ text: "Akcje", value: "actions", sortable: false });
       }
-      
+
       return baseHeaders;
     },
     async fetchUserData() {
@@ -162,7 +166,7 @@ export default {
           const userDataObject = JSON.parse(user_information);
           this.userRole = userDataObject.role;
           this.isAdmin = this.userRole === "admin";
-          this.headers = this.getHeaders(); // Zaktualizuj nagłówki
+          this.headers = this.getHeaders();
         } else {
           console.error("User information not found in localStorage.");
         }

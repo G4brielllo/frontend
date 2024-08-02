@@ -39,19 +39,23 @@
                 @click="editUser(item.id)"
                 text
                 class="compact-btn"
-              >Edytuj</v-btn>
+                >Edytuj</v-btn
+              >
               <v-btn
                 color="gray"
                 @click="deleteUser(item.id)"
                 text
                 class="compact-btn"
-              >Usuń</v-btn>
+                >Usuń</v-btn
+              >
             </template>
           </v-data-table>
         </v-card-text>
         <v-card-actions class="d-flex justify-center">
           <v-btn color="gray" @click="addUser" class="mx-2">Dodaj</v-btn>
-          <v-btn color="gray" @click="returnToHomePage" class="mx-2">Wróć</v-btn>
+          <v-btn color="gray" @click="returnToHomePage" class="mx-2"
+            >Wróć</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-container>

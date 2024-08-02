@@ -67,8 +67,7 @@
                     />
                   </div>
                 </v-col>
-                <v-col cols="12" sm="6">
-                </v-col>
+                <v-col cols="12" sm="6"> </v-col>
               </v-row>
             </v-container>
           </v-form>
@@ -111,12 +110,9 @@ export default {
     } else {
       console.error("No user ID provided in query parameters.");
     }
-
   },
 
   methods: {
-   
-
     async fetchUser(userId) {
       try {
         const response = await axios.get(
@@ -162,11 +158,10 @@ export default {
           const formData = new FormData();
           formData.append("name", this.user.name);
           formData.append("email", this.user.email);
-  
 
           if (this.user.password) {
             formData.append("password", this.user.password);
-          }else{
+          } else {
             formData.append("password", this.user.password);
           }
 

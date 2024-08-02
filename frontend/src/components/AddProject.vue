@@ -3,7 +3,9 @@
     <v-container>
       <v-card class="elevation-4">
         <v-toolbar color="black" dark>
-          <v-toolbar-title>{{ isNewProject ? 'Dodaj Projekt' : 'Edytuj Projekt' }}</v-toolbar-title>
+          <v-toolbar-title>{{
+            isNewProject ? "Dodaj Projekt" : "Edytuj Projekt"
+          }}</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card-text>
@@ -11,10 +13,18 @@
             <v-container>
               <v-row>
                 <v-col cols="12" sm="6">
-                  <v-text-field v-model="project.name" label="Nazwa" required></v-text-field>
+                  <v-text-field
+                    v-model="project.name"
+                    label="Nazwa"
+                    required
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                  <v-textarea v-model="project.description" label="Opis" rows="3"></v-textarea>
+                  <v-textarea
+                    v-model="project.description"
+                    label="Opis"
+                    rows="3"
+                  ></v-textarea>
                 </v-col>
                 <v-col cols="12">
                   <v-select
@@ -31,7 +41,9 @@
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="gray" @click="saveProject">{{ isNewProject ? 'Dodaj' : 'Zapisz zmiany' }}</v-btn>
+          <v-btn color="gray" @click="saveProject">{{
+            isNewProject ? "Dodaj" : "Zapisz zmiany"
+          }}</v-btn>
           <v-btn color="gray" @click="cancelProjectAdding">Anuluj</v-btn>
         </v-card-actions>
       </v-card>
@@ -40,15 +52,15 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   data() {
     return {
       project: {
         id: null,
-        name: '',
-        description: '',
+        name: "",
+        description: "",
         client: null,
       },
       clients: [],
@@ -66,16 +78,17 @@ export default {
   methods: {
     async fetchProjectDetails(projectId) {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/projects/${projectId}`);
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/projects/${projectId}`
+        );
         const projectData = response.data;
 
         this.project.id = projectData.id;
         this.project.name = projectData.name;
         this.project.description = projectData.description;
         this.project.client = projectData.client_id;
-
       } catch (error) {
-        console.error('Error fetching project details:', error);
+        console.error("Error fetching project details:", error);
       }
     },
 
@@ -84,55 +97,57 @@ export default {
         try {
           let response;
           if (this.isNewProject) {
-            response = await axios.post('http://127.0.0.1:8000/api/projects', {
+            response = await axios.post("http://127.0.0.1:8000/api/projects", {
               name: this.project.name,
               description: this.project.description,
               client_id: this.project.client,
             });
           } else {
-            response = await axios.put(`http://127.0.0.1:8000/api/projects/${this.project.id}`, {
-              name: this.project.name,
-              description: this.project.description,
-              client_id: this.project.client,
-            });
+            response = await axios.put(
+              `http://127.0.0.1:8000/api/projects/${this.project.id}`,
+              {
+                name: this.project.name,
+                description: this.project.description,
+                client_id: this.project.client,
+              }
+            );
           }
 
           if (response.status === 201 || response.status === 200) {
-            console.log('Project saved successfully:', response.data);
+            console.log("Project saved successfully:", response.data);
             this.clearForm();
-            this.$router.push('/');
+            this.$router.push("/");
           } else {
-            console.error('Error saving project:', response.data);
+            console.error("Error saving project:", response.data);
           }
         } catch (error) {
-          console.error('Error saving project:', error);
+          console.error("Error saving project:", error);
         }
       }
     },
 
     cancelProjectAdding() {
       this.clearForm();
-      this.$router.push('/');
+      this.$router.push("/");
     },
 
     clearForm() {
       this.project.id = null;
-      this.project.name = '';
-      this.project.description = '';
+      this.project.name = "";
+      this.project.description = "";
       this.project.client = null;
     },
 
     async fetchClients() {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/clients');
+        const response = await axios.get("http://127.0.0.1:8000/api/clients");
         this.clients = response.data;
       } catch (error) {
-        console.error('Error fetching clients:', error);
+        console.error("Error fetching clients:", error);
       }
     },
   },
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

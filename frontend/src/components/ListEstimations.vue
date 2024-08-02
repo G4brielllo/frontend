@@ -99,11 +99,11 @@ export default {
         { text: "Kwota", value: "amount" },
         { text: "Data wykonania", value: "date" },
       ];
-      
+
       if (this.isAdmin) {
         baseHeaders.push({ text: "Akcje", value: "actions", sortable: false });
       }
-      
+
       return baseHeaders;
     },
   },
@@ -166,7 +166,9 @@ export default {
     },
     async fetchEstimations() {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/estimations");
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/estimations"
+        );
         this.estimations = response.data.map((estimation) => ({
           id: estimation.id,
           name: estimation.name,

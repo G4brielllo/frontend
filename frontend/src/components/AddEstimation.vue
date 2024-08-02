@@ -3,7 +3,9 @@
     <v-container>
       <v-card class="elevation-4 compact-card">
         <v-toolbar color="black" dark>
-          <v-toolbar-title>{{ isNewEstimation ? 'Dodaj wycenę' : 'Edytuj wycenę' }}</v-toolbar-title>
+          <v-toolbar-title>{{
+            isNewEstimation ? "Dodaj wycenę" : "Edytuj wycenę"
+          }}</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card-text>
@@ -11,10 +13,20 @@
             <v-container>
               <v-row>
                 <v-col cols="12" sm="6">
-                  <v-text-field v-model="estimation.name" label="Nazwa" dense required></v-text-field>
+                  <v-text-field
+                    v-model="estimation.name"
+                    label="Nazwa"
+                    dense
+                    required
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                  <v-textarea v-model="estimation.description" label="Opis" rows="2" dense></v-textarea>
+                  <v-textarea
+                    v-model="estimation.description"
+                    label="Opis"
+                    rows="2"
+                    dense
+                  ></v-textarea>
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-select
@@ -49,25 +61,42 @@
                         class="compact-date-field"
                       ></v-text-field>
                     </template>
-                    <v-date-picker v-model="estimation.date" no-title @input="onDatePickerInput"></v-date-picker>
+                    <v-date-picker
+                      v-model="estimation.date"
+                      no-title
+                      @input="onDatePickerInput"
+                    ></v-date-picker>
                   </v-menu>
                 </v-col>
                 <v-col cols="12">
-                  <v-radio-group v-model="estimation.type" label="Rodzaj wyceny" dense>
+                  <v-radio-group
+                    v-model="estimation.type"
+                    label="Rodzaj wyceny"
+                    dense
+                  >
                     <v-radio value="hourly" label="Godzinowa"></v-radio>
                     <v-radio value="fixed" label="Fixed Price"></v-radio>
                   </v-radio-group>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-text-field v-model="estimation.amount" label="Wycena" dense required></v-text-field>
+                  <v-text-field
+                    v-model="estimation.amount"
+                    label="Wycena"
+                    dense
+                    required
+                  ></v-text-field>
                 </v-col>
               </v-row>
             </v-container>
           </v-form>
         </v-card-text>
         <v-card-actions class="compact-actions">
-          <v-btn color="gray" @click="saveEstimation" small>{{ isNewEstimation ? 'Dodaj' : 'Zapisz' }}</v-btn>
-          <v-btn color="gray" @click="cancelEstimationAdding" small>Anuluj</v-btn>
+          <v-btn color="gray" @click="saveEstimation" small>{{
+            isNewEstimation ? "Dodaj" : "Zapisz"
+          }}</v-btn>
+          <v-btn color="gray" @click="cancelEstimationAdding" small
+            >Anuluj</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-container>
@@ -75,23 +104,23 @@
 </template>
 
 <script>
-import axios from '@/axios';
+import axios from "@/axios";
 
 export default {
   data() {
     return {
       estimation: {
-        name: '',
-        description: '',
+        name: "",
+        description: "",
         project_id: null,
         date: new Date().toISOString().substr(0, 10),
-        type: 'hourly',
-        amount: ''
+        type: "hourly",
+        amount: "",
       },
       projects: [],
       valid: true,
       isNewEstimation: true,
-      menu: false 
+      menu: false,
     };
   },
   created() {
@@ -105,15 +134,17 @@ export default {
   methods: {
     async fetchProjects() {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/projects');
+        const response = await axios.get("http://127.0.0.1:8000/api/projects");
         this.projects = response.data;
       } catch (error) {
-        console.error('Error fetching projects:', error);
+        console.error("Error fetching projects:", error);
       }
     },
     async fetchEstimationDetails(estimationId) {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/estimations/${estimationId}`);
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/estimations/${estimationId}`
+        );
         const estimationData = response.data;
 
         this.estimation.name = estimationData.name;
@@ -123,7 +154,7 @@ export default {
         this.estimation.type = estimationData.type;
         this.estimation.amount = estimationData.amount;
       } catch (error) {
-        console.error('Error fetching estimation details:', error);
+        console.error("Error fetching estimation details:", error);
       }
     },
     async saveEstimation() {
@@ -131,34 +162,40 @@ export default {
         try {
           let response;
           if (this.isNewEstimation) {
-            response = await axios.post('http://127.0.0.1:8000/api/estimations', this.estimation);
+            response = await axios.post(
+              "http://127.0.0.1:8000/api/estimations",
+              this.estimation
+            );
           } else {
-            response = await axios.put(`http://127.0.0.1:8000/api/estimations/${this.$route.query.id}`, this.estimation);
+            response = await axios.put(
+              `http://127.0.0.1:8000/api/estimations/${this.$route.query.id}`,
+              this.estimation
+            );
           }
 
           if (response.status === 201 || response.status === 200) {
-            console.log('Estimation saved successfully:', response.data);
+            console.log("Estimation saved successfully:", response.data);
             this.clearForm();
-            this.$router.push('/');
+            this.$router.push("/");
           } else {
-            console.error('Error saving estimation:', response.data);
+            console.error("Error saving estimation:", response.data);
           }
         } catch (error) {
-          console.error('Error saving estimation:', error);
+          console.error("Error saving estimation:", error);
         }
       }
     },
     cancelEstimationAdding() {
       this.clearForm();
-      this.$router.push('/');
+      this.$router.push("/");
     },
     clearForm() {
-      this.estimation.name = '';
-      this.estimation.description = '';
+      this.estimation.name = "";
+      this.estimation.description = "";
       this.estimation.project_id = null;
       this.estimation.date = new Date().toISOString().substr(0, 10);
-      this.estimation.type = 'hourly';
-      this.estimation.amount = '';
+      this.estimation.type = "hourly";
+      this.estimation.amount = "";
     },
     onDatePickerInput(date) {
       this.estimation.date = date;

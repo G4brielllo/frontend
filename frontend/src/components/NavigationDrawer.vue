@@ -21,7 +21,6 @@
 
     <v-divider></v-divider>
     <v-list dense nav>
-      <!-- Home Page -->
       <v-list-item
         :disabled="isCurrentRoute('/')"
         @mouseover="toggleListItemHover(true, 'home')"
@@ -34,7 +33,6 @@
         <v-list-item-title @click="goToHomePage()">Home Page</v-list-item-title>
       </v-list-item>
 
-      <!-- Clients -->
       <v-list-item
         :disabled="isCurrentRoute('/listClients')"
         @mouseover="toggleListItemHover(true, 'clients')"
@@ -49,7 +47,6 @@
         >
       </v-list-item>
 
-      <!-- Projects -->
       <v-list-item
         :disabled="isCurrentRoute('/listProjects')"
         @mouseover="toggleListItemHover(true, 'projects')"
@@ -64,7 +61,6 @@
         >
       </v-list-item>
 
-      <!-- Estimations -->
       <v-list-item
         :disabled="isCurrentRoute('/listEstimations')"
         @mouseover="toggleListItemHover(true, 'estimations')"
@@ -79,7 +75,6 @@
         >
       </v-list-item>
 
-      <!-- User List -->
       <v-list-item
         v-if="isLoggedIn() && isAdmin"
         :disabled="isCurrentRoute('/listUsers')"
@@ -95,7 +90,6 @@
         >
       </v-list-item>
 
-      <!-- Edit Item -->
       <v-list-item
         v-if="isLoggedIn() && !isAdmin"
         @click="editItem()"
@@ -109,7 +103,6 @@
         <v-list-item-title>Edit My Data</v-list-item-title>
       </v-list-item>
 
-      <!-- Logout -->
       <v-list-item
         v-if="isLoggedIn()"
         @click="logout()"
@@ -123,7 +116,6 @@
         <v-list-item-title>Logout</v-list-item-title>
       </v-list-item>
 
-      <!-- Login/Register -->
       <v-list-item
         v-else
         @click="goToLogin()"

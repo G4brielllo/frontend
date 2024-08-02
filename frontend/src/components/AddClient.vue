@@ -3,7 +3,9 @@
     <v-container>
       <v-card class="elevation-4 compact-card">
         <v-toolbar color="black" dark>
-          <v-toolbar-title>{{ isNewClient ? 'Dodaj klienta' : 'Edytuj klienta' }}</v-toolbar-title>
+          <v-toolbar-title>{{
+            isNewClient ? "Dodaj klienta" : "Edytuj klienta"
+          }}</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card-text>
@@ -11,29 +13,63 @@
             <v-container>
               <v-row>
                 <v-col cols="12" sm="6">
-                  <v-text-field v-model="client.name" label="Nazwa" dense required></v-text-field>
+                  <v-text-field
+                    v-model="client.name"
+                    label="Nazwa"
+                    dense
+                    required
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-text-field v-model="client.email" label="Email" dense required></v-text-field>
+                  <v-text-field
+                    v-model="client.email"
+                    label="Email"
+                    dense
+                    required
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                  <v-textarea v-model="client.description" label="Opis" rows="3" dense required></v-textarea>
+                  <v-textarea
+                    v-model="client.description"
+                    label="Opis"
+                    rows="3"
+                    dense
+                    required
+                  ></v-textarea>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-file-input v-model="image" label="Logo" accept="image/*" @change="createBase64Image" dense></v-file-input>
+                  <v-file-input
+                    v-model="image"
+                    label="Logo"
+                    accept="image/*"
+                    @change="createBase64Image"
+                    dense
+                  ></v-file-input>
                   <div v-if="client.logo">
-                    <img :src="client.logo" alt="Client Logo" style="max-width: 100px; max-height: 100px;" />
+                    <img
+                      :src="client.logo"
+                      alt="Client Logo"
+                      style="max-width: 100px; max-height: 100px"
+                    />
                   </div>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-select v-model="client.country" :items="countries" label="Kraj" dense required></v-select>
+                  <v-select
+                    v-model="client.country"
+                    :items="countries"
+                    label="Kraj"
+                    dense
+                    required
+                  ></v-select>
                 </v-col>
               </v-row>
             </v-container>
           </v-form>
         </v-card-text>
         <v-card-actions class="compact-actions">
-          <v-btn color="gray" @click="saveClient" :disabled="!valid">{{ isNewClient ? 'Dodaj' : 'Zapisz zmiany' }}</v-btn>
+          <v-btn color="gray" @click="saveClient" :disabled="!valid">{{
+            isNewClient ? "Dodaj" : "Zapisz zmiany"
+          }}</v-btn>
           <v-btn color="gray" @click="cancelClientAdding">Anuluj</v-btn>
         </v-card-actions>
       </v-card>
@@ -42,20 +78,20 @@
 </template>
 
 <script>
-import axios from '@/axios';
+import axios from "@/axios";
 
 export default {
   data() {
     return {
       client: {
         id: null,
-        name: '',
-        email: '',
-        description: '',
+        name: "",
+        email: "",
+        description: "",
         logo: null,
-        country: '',
+        country: "",
       },
-      countries: ['Poland', 'Germany', 'France', 'Italy', 'Spain'],
+      countries: ["Poland", "Germany", "France", "Italy", "Spain"],
       valid: true,
       isNewClient: true,
       image: null,
@@ -71,7 +107,9 @@ export default {
   methods: {
     async fetchClientDetails(clientId) {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/clients/${clientId}`);
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/clients/${clientId}`
+        );
         const clientData = response.data;
 
         this.client.id = clientData.id;
@@ -85,20 +123,20 @@ export default {
           await this.fetchImageUrl(clientData.logo);
         }
       } catch (error) {
-        console.error('Error fetching client details:', error);
+        console.error("Error fetching client details:", error);
       }
     },
 
     async fetchImageUrl(url) {
       try {
-        const response = await axios.get(url, { responseType: 'blob' });
+        const response = await axios.get(url, { responseType: "blob" });
         const reader = new FileReader();
         reader.onload = (event) => {
           this.base64 = event.target.result;
         };
         reader.readAsDataURL(response.data);
       } catch (error) {
-        console.error('Error fetching image URL:', error);
+        console.error("Error fetching image URL:", error);
       }
     },
 
@@ -106,47 +144,53 @@ export default {
       if (this.$refs.form.validate()) {
         try {
           const formData = new FormData();
-          formData.append('name', this.client.name);
-          formData.append('email', this.client.email);
-          formData.append('description', this.client.description);
-          formData.append('country', this.client.country);
+          formData.append("name", this.client.name);
+          formData.append("email", this.client.email);
+          formData.append("description", this.client.description);
+          formData.append("country", this.client.country);
 
           if (this.image) {
-            formData.append('logo', this.base64);
+            formData.append("logo", this.base64);
           }
 
           let response;
           if (this.isNewClient) {
-            response = await axios.post('http://127.0.0.1:8000/api/clients', formData);
+            response = await axios.post(
+              "http://127.0.0.1:8000/api/clients",
+              formData
+            );
           } else {
-            response = await axios.put(`http://127.0.0.1:8000/api/clients/${this.client.id}`, formData);
+            response = await axios.put(
+              `http://127.0.0.1:8000/api/clients/${this.client.id}`,
+              formData
+            );
           }
 
           if (response.status === 200 || response.status === 201) {
-            console.log('Client saved successfully:', response.data);
+            console.log("Client saved successfully:", response.data);
             this.clearForm();
-            this.$router.push('/');
+            this.$router.push("/");
           } else {
-            console.error('Error saving client:', response.data);
+            console.error("Error saving client:", response.data);
           }
         } catch (error) {
-          console.error('Error saving client:', error);
+          console.error("Error saving client:", error);
         }
       }
     },
 
     cancelClientAdding() {
       this.clearForm();
-      this.$router.push('/');
+      this.$router.push("/");
     },
 
     clearForm() {
       this.client.id = null;
-      this.client.name = '';
-      this.client.email = '';
-      this.client.description = '';
+      this.client.name = "";
+      this.client.email = "";
+      this.client.description = "";
       this.client.logo = null;
-      this.client.country = '';
+      this.client.country = "";
       this.base64 = null;
       this.image = null;
     },
